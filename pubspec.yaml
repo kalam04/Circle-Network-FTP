@@ -25,10 +25,16 @@ dependencies:
     sdk: flutter
   provider: ^4.3.2+3
   flutter_svg:
-  video_player: ^0.10.1
+  video_player:
   flick_video_player:
   http:
   cached_network_image:
+  flutter_vlc_player: ^4.0.3
+  neeko: ^0.0.10
+  better_player:
+  chewie:
+  flutter_spinkit: ^4.1.2+1
+
 
 
 

@@ -1107,22 +1107,426 @@
 
 
 
+//
+//
+// import 'package:flutter/material.dart';
+//
+// void main() => runApp(new MyApp());
+//
+// class MyApp extends StatelessWidget {
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     return new MaterialApp(
+//       title: 'Flutter Demo',
+//       theme: new ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: new MyHomePage(title: 'ListView with Search'),
+//     );
+//   }
+// }
+//
+// class myclass {
+//   String word1;
+//   String word2;
+//
+//   myclass(this.word1, this.word2);
+// }
+//
+// class MyHomePage extends StatefulWidget {
+//   MyHomePage({Key key, this.title}) : super(key: key);
+//   final String title;
+//
+//   @override
+//   _MyHomePageState createState() => new _MyHomePageState();
+// }
+//
+// class _MyHomePageState extends State<MyHomePage> {
+//   TextEditingController editingController = TextEditingController();
+//
+//   final duplicateItems = List<String>.generate(10000, (i) => "Item $i");
+//   var items = List<String>();
+//
+//   List<myclass> words = [
+//     myclass("Start", "دەستپێدکت"),
+//     myclass("Go", "دچت"),
+//     myclass("Drive", "دهاژوت"),
+//     myclass("Sleep", "دنڤت"),
+//   ];
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return new Scaffold(
+//       appBar: new AppBar(
+//         title: new Text(widget.title),
+//       ),
+//       body: Container(
+//         child: Column(
+//           children: <Widget>[
+//             Padding(
+//               padding: const EdgeInsets.all(8.0),
+//               child: TextField(
+//                 onChanged: (value) {
+//                   setState(() {});
+//                 },
+//                 controller: editingController,
+//                 decoration: InputDecoration(
+//                     labelText: "Search",
+//                     hintText: "Search",
+//                     prefixIcon: Icon(Icons.search),
+//                     border: OutlineInputBorder(
+//                         borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+//               ),
+//             ),
+//             Expanded(
+//               child: ListView.builder(
+//                   shrinkWrap: true,
+//                   itemCount: words.length,
+//                   itemBuilder: (context, index) {
+//                     if (editingController.text.isEmpty) {
+//                       return ListTile(
+//                         title:
+//                         Text('${words[index].word1} ${words[index].word2}'),
+//                       );
+//                     } else if (words[index]
+//                         .word1
+//                         .toLowerCase()
+//                         .contains(editingController.text) ||
+//                         words[index]
+//                             .word2
+//                             .toLowerCase()
+//                             .contains(editingController.text)) {
+//                       return ListTile(
+//                         title:
+//                         Text('${words[index].word1} ${words[index].word2}'),
+//                       );
+//                     } else {
+//                       return Container();
+//                     }
+//                   }),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 
+
+
+//
+// import 'package:chewie/chewie.dart';
+// import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart';
+// import 'package:video_player/video_player.dart';
+//
+// void main() {
+//   runApp(
+//     const ChewieDemo(),
+//   );
+// }
+//
+// class ChewieDemo extends StatefulWidget {
+//   // ignore: use_key_in_widget_constructors
+//   const ChewieDemo({this.title = 'Chewie Demo'});
+//
+//   final String title;
+//
+//   @override
+//   State<StatefulWidget> createState() {
+//     return _ChewieDemoState();
+//   }
+// }
+//
+// class _ChewieDemoState extends State<ChewieDemo> {
+//   TargetPlatform _platform;
+//   VideoPlayerController _videoPlayerController1;
+//   VideoPlayerController _videoPlayerController2;
+//   ChewieController _chewieController;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     initializePlayer();
+//   }
+//
+//   @override
+//   void dispose() {
+//     _videoPlayerController1.dispose();
+//     _videoPlayerController2.dispose();
+//     _chewieController.dispose();
+//     super.dispose();
+//   }
+//
+//   Future<void> initializePlayer() async {
+//     _videoPlayerController1 = VideoPlayerController.network(
+//         'http://index.circleftp.net/FILE/Hindi%20Contents/Hindi%20Movies/2020/Coolie%20No.%201%20%282020%29%20Hindi%20TRUE%20WEB-DL%20-%201080p%20-%20AVC%20-%20UNTOUCHED%20-%20%28DD+5.1%20-%20640Kbps%29%20-%204GB%20-%20ESub/Coolie%20No.%201%20%282020%29%20Hindi%20TRUE%20WEB-DL%20-%201080p%20-%20AVC%20-%20UNTOUCHED%20-%20%28DD+5.1%20-%20640Kbps%29%20-%204GB%20-%20ESub.mkv');
+//     await _videoPlayerController1.initialize();
+//     _videoPlayerController2 = VideoPlayerController.network(
+//         'http://index.circleftp.net/FILE/Hindi%20Contents/Hindi%20Movies/2020/Coolie%20No.%201%20%282020%29%20Hindi%20TRUE%20WEB-DL%20-%201080p%20-%20AVC%20-%20UNTOUCHED%20-%20%28DD+5.1%20-%20640Kbps%29%20-%204GB%20-%20ESub/Coolie%20No.%201%20%282020%29%20Hindi%20TRUE%20WEB-DL%20-%201080p%20-%20AVC%20-%20UNTOUCHED%20-%20%28DD+5.1%20-%20640Kbps%29%20-%204GB%20-%20ESub.mkv');
+//     await _videoPlayerController2.initialize();
+//     _chewieController = ChewieController(
+//       videoPlayerController: _videoPlayerController1,
+//       autoPlay: true,
+//       looping: true,
+//
+//     );
+//     setState(() {});
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: widget.title,
+//       theme: ThemeData.light().copyWith(
+//         platform: _platform ?? Theme.of(context).platform,
+//       ),
+//       home: Scaffold(
+//         appBar: AppBar(
+//           title: Text(widget.title),
+//         ),
+//         body: Column(
+//           children: <Widget>[
+//             Expanded(
+//               child: Center(
+//                 child: _chewieController != null &&
+//                     _chewieController
+//                         .videoPlayerController.value.initialized
+//                     ? Chewie(
+//                   controller: _chewieController,
+//                 )
+//                     : Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: const [
+//                     CircularProgressIndicator(),
+//                     SizedBox(height: 20),
+//                     Text('Loading'),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//             FlatButton(
+//               onPressed: () {
+//                 _chewieController.enterFullScreen();
+//               },
+//               child: const Text('Fullscreen'),
+//             ),
+//             Row(
+//               children: <Widget>[
+//                 Expanded(
+//                   child: FlatButton(
+//                     onPressed: () {
+//                       setState(() {
+//                         _chewieController.dispose();
+//                         _videoPlayerController1.pause();
+//                         _videoPlayerController1.seekTo(const Duration());
+//                         _chewieController = ChewieController(
+//                           videoPlayerController: _videoPlayerController1,
+//                           autoPlay: true,
+//                           looping: true,
+//                         );
+//                       });
+//                     },
+//                     child: const Padding(
+//                       padding: EdgeInsets.symmetric(vertical: 16.0),
+//                       child: Text("Landscape Video"),
+//                     ),
+//                   ),
+//                 ),
+//                 Expanded(
+//                   child: FlatButton(
+//                     onPressed: () {
+//                       setState(() {
+//                         _chewieController.dispose();
+//                         _videoPlayerController2.pause();
+//                         _videoPlayerController2.seekTo(const Duration());
+//                         _chewieController = ChewieController(
+//                           videoPlayerController: _videoPlayerController2,
+//                           autoPlay: true,
+//                           looping: true,
+//                         );
+//                       });
+//                     },
+//                     child: const Padding(
+//                       padding: EdgeInsets.symmetric(vertical: 16.0),
+//                       child: Text("Portrait Video"),
+//                     ),
+//                   ),
+//                 )
+//               ],
+//             ),
+//             Row(
+//               children: <Widget>[
+//                 Expanded(
+//                   child: FlatButton(
+//                     onPressed: () {
+//                       setState(() {
+//                         _platform = TargetPlatform.android;
+//                       });
+//                     },
+//                     child: const Padding(
+//                       padding: EdgeInsets.symmetric(vertical: 16.0),
+//                       child: Text("Android controls"),
+//                     ),
+//                   ),
+//                 ),
+//                 Expanded(
+//                   child: FlatButton(
+//                     onPressed: () {
+//                       setState(() {
+//                         _platform = TargetPlatform.iOS;
+//                       });
+//                     },
+//                     child: const Padding(
+//                       padding: EdgeInsets.symmetric(vertical: 16.0),
+//                       child: Text("iOS controls"),
+//                     ),
+//                   ),
+//                 )
+//               ],
+//             )
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+//
+//
+//
+//
+
+
+//
+//
+// import 'package:flutter/material.dart';
+//
+// void main() => runApp(new MyApp());
+//
+// class MyApp extends StatelessWidget {
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     return new MaterialApp(
+//         title: 'Flutter Demo',
+//         theme: new ThemeData(
+//         primarySwatch: Colors.blue,
+//     ),
+//     home: new MyHomePage(title: 'ListView with Search'),
+//     );
+//   }
+// }
+//
+// class MyHomePage extends StatefulWidget {
+//   MyHomePage({Key key, this.title}) : super(key: key);
+//   final String title;
+//
+//   @override
+//   _MyHomePageState createState() => new _MyHomePageState();
+// }
+//
+// class _MyHomePageState extends State<MyHomePage> {
+//   TextEditingController editingController = TextEditingController();
+//
+//   final duplicateItems = List<String>.generate(10000, (i) => "Item $i");
+//   var items = List<String>();
+//
+//   @override
+//   void initState() {
+//     items.addAll(duplicateItems);
+//     super.initState();
+//   }
+//
+//   void filterSearchResults(String query) {
+//     List<String> dummySearchList = List<String>();
+//     dummySearchList.addAll(duplicateItems);
+//     if(query.isNotEmpty) {
+//       List<String> dummyListData = List<String>();
+//       dummySearchList.forEach((item) {
+//         if(item.contains(query)) {
+//           dummyListData.add(item);
+//         }
+//       });
+//       setState(() {
+//         items.clear();
+//         items.addAll(dummyListData);
+//       });
+//       return;
+//     } else {
+//       setState(() {
+//         items.clear();
+//         items.addAll(duplicateItems);
+//       });
+//     }
+//
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return new Scaffold(
+//       appBar: new AppBar(
+//         title: new Text(widget.title),
+//       ),
+//       body: Container(
+//         child: Column(
+//           children: <Widget>[
+//             Padding(
+//               padding: const EdgeInsets.all(8.0),
+//               child: TextField(
+//                 onChanged: (value) {
+//                   filterSearchResults(value);
+//                 },
+//                 controller: editingController,
+//                 decoration: InputDecoration(
+//                     labelText: "Search",
+//                     hintText: "Search",
+//                     prefixIcon: Icon(Icons.search),
+//                     border: OutlineInputBorder(
+//                         borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+//               ),
+//             ),
+//             Expanded(
+//               child: ListView.builder(
+//                 shrinkWrap: true,
+//                 itemCount: items.length,
+//                 itemBuilder: (context, index) {
+//                   return ListTile(
+//                     title: Text('${items[index]}'),
+//                   );
+//                 },
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+//
+//
+//
 
 import 'dart:convert';
-
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:circle_network_ftp/playvideo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 
+import 'Search.dart';
 
+void main() {
 
-
-void main(){
-  runApp(MaterialApp(home: SamplePlayer()));
+  runApp(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SamplePlayer()));
 }
 
 class SamplePlayer extends StatefulWidget {
@@ -1133,249 +1537,200 @@ class SamplePlayer extends StatefulWidget {
 }
 
 class _SamplePlayerState extends State<SamplePlayer> {
-  var data20191,data20173,data29605,data289,data20120,data285,data20151,data20068,data20029,data19960,data474,list,url,result,decode_data,get_data;
-  var s="http://circleftp.net/cnapp/?type=category&term_id=";
-  //"20191,20173,29605,289,20120,285,20151,20068,20029,19960,474,"
+  var data20191,
+      data20173,
+      data29605,
+      data289,
+      data20120,
+      data285,
+      data20151,
+      data20068,
+      data20029,
+      data19960,
+      data474,
+      list,
+      url,
+      result,
+      decode_data,
+      get_data,
+      search_movie;
+  var s = "http://circleftp.net/cnapp/?type=category&term_id=";
+  TextEditingController _controller;
+  var name;
 
+  Future getvalue() async {
+    var respons20191 = await http.get(
+      "http://circleftp.net/category_by_post/",
+    );
 
-
-  // getUrl(){
-  //   for(int i=0;i<list.length;i++){
-  //     url[i]=s+list[i]["term_id"].toString();
-  //     print(url[i]);
-  //   }
-  // }
-
-  Future getvalue()async{
-
-    var respons20191 = await http.get("http://circleftp.net/category_by_post/",);
-    // var respons20173= await http.get("http://circleftp.net/cnapp/?type=category&term_id=20173");
-    // var respons29605 = await http.get("http://circleftp.net/cnapp/?type=category&term_id=29605",);
-    // var respons289= await http.get("http://circleftp.net/cnapp/?type=category&term_id=289");
-    // var respons20120 = await http.get("http://circleftp.net/cnapp/?type=category&term_id=20120",);
-    // var respons285= await http.get("http://circleftp.net/cnapp/?type=category&term_id=285");
-    // var respons20151 = await http.get("http://circleftp.net/cnapp/?type=category&term_id=20151",);
-    // var respons20068= await http.get("http://circleftp.net/cnapp/?type=category&term_id=20068");
-    // var respons20029 = await http.get("http://circleftp.net/cnapp/?type=category&term_id=20029",);
-    // var respons19960= await http.get("http://circleftp.net/cnapp/?type=category&term_id=19960");
-    // var respons474= await http.get("http://circleftp.net/cnapp/?type=category&term_id=474");
     setState(() {
+      var decode20191 = json.decode(respons20191.body);
 
-      var decode20191=json.decode(respons20191.body);
-      // var decode20173=json.decode(respons20173.body);
-      // var decode29605=json.decode(respons29605.body);
-      // var decode289=json.decode(respons289.body);
-      // var decode20120=json.decode(respons20120.body);
-      // var decode285=json.decode(respons285.body);
-      // var decode20151=json.decode(respons20151.body);
-      // var decode20068=json.decode(respons20068.body);
-      // var decode20029=json.decode(respons20029.body);
-      // var decode19960=json.decode(respons19960.body);
-      // var decode474=json.decode(respons474.body);
-
-
-      data20191=decode20191;
-      // data20173=decode20173;
-      // data29605=decode29605;
-      // data289=decode289;
-      // data20120=decode20120;
-      // data285=decode285;
-      // data20151=decode20151;
-      // data20068=decode20068;
-      // data20029=decode20029;
-      // data19960=decode19960;
-      // data474=decode474;
-
+      data20191 = decode20191;
 
     });
-    var name=[
-      "4K Ultra HD Movie Collection",
-      "Animation Dubbed Movies",
-      "Animation Movie &amp; Anime",
-      "Animation Movies",
-      "English &amp; Foreign Hindi Dubbed Movies",
-      "English Movies",
-      "Foreign Dubbed Movies",
-      "Foreign Language Movies",
-      "Hindi Movies",
-      "South Indian Dubbed",
-      "South Indian Movies",
-    ];
 
   }
-  // Future getvalue()async{
-  //   // for(int i=0;i<url_list.length;i++){
-  //   //   result[i]=await http.get(url_list[i].toString());
-  //   // }
-  //   // setState(() {
-  //   //   for(int i=0;i<url_list.length;i++){
-  //   //     decode_data[i]=json.decode(result[i].body);
-  //   //   }
-  //   //
-  //   // });
-  //   var respons20191 = await http.get("http://circleftp.net/cnapp/?type=category&term_id=20191",);
-  //   var respons20173= await http.get("http://circleftp.net/cnapp/?type=category&term_id=20173");
-  //   var respons29605 = await http.get("http://circleftp.net/cnapp/?type=category&term_id=29605",);
-  //   var respons289= await http.get("http://circleftp.net/cnapp/?type=category&term_id=289");
-  //   var respons20120 = await http.get("http://circleftp.net/cnapp/?type=category&term_id=20120",);
-  //   var respons285= await http.get("http://circleftp.net/cnapp/?type=category&term_id=285");
-  //   var respons20151 = await http.get("http://circleftp.net/cnapp/?type=category&term_id=20151",);
-  //   var respons20068= await http.get("http://circleftp.net/cnapp/?type=category&term_id=20068");
-  //   var respons20029 = await http.get("http://circleftp.net/cnapp/?type=category&term_id=20029",);
-  //   var respons19960= await http.get("http://circleftp.net/cnapp/?type=category&term_id=19960");
-  //   var respons474= await http.get("http://circleftp.net/cnapp/?type=category&term_id=474");
-  //   setState(() {
-  //
-  //     var decode20191=json.decode(respons20191.body);
-  //     var decode20173=json.decode(respons20173.body);
-  //     var decode29605=json.decode(respons29605.body);
-  //     var decode289=json.decode(respons289.body);
-  //     var decode20120=json.decode(respons20120.body);
-  //     var decode285=json.decode(respons285.body);
-  //     var decode20151=json.decode(respons20151.body);
-  //     var decode20068=json.decode(respons20068.body);
-  //     var decode20029=json.decode(respons20029.body);
-  //     var decode19960=json.decode(respons19960.body);
-  //     var decode474=json.decode(respons474.body);
-  //
-  //
-  //     data20191=decode20191;
-  //     data20173=decode20173;
-  //     data29605=decode29605;
-  //     data289=decode289;
-  //     data20120=decode20120;
-  //     data285=decode285;
-  //     data20151=decode20151;
-  //     data20068=decode20068;
-  //     data20029=decode20029;
-  //     data19960=decode19960;
-  //     data474=decode474;
-  //
-  //
-  //   });
-  // }
-  // Future getvalue20191()async{
-  //   //var respons= await http.get("http://circleftp.net/cnapp/?type=category&term_id=474");
-  //   var respons20191= await http.get("http://circleftp.net/cnapp/?type=category&term_id=289");
-  //   setState(() {
-  //     // var decode=json.decode(respons.body);
-  //     // data=decode;
-  //
-  //     var decode20191=json.decode(respons20191.body);
-  //     data20191=decode20191;
-  //     //print(widget.a);
-  //     //debugPrint('x=$x');
-  //
-  //   });
-  // }
+
+  bool isSearching = false;
+  var catagori = [
+    "4K Ultra HD Movie Collection",
+    "Animation Dubbed Movies",
+    "Animation Movie Japanese",
+    "Animation Movies",
+    "English Foreign Hindi Dubbed Movies",
+    "English Movies",
+    "Foreign Dubbed Movies",
+    "Foreign Language Movies",
+    "Hindi Movies",
+    "South Indian Dubbed",
+    "South Indian Movies",
+  ];
+
+  void _filterCountries(value) {
+    setState(() {
+      search_movie = data20191
+          .where((movie) =>
+              movie['name'].toLowerCase().contains(value.toLowerCase()))
+          .toList();
+    });
+  }
+
+
+
+  final spinkit = SpinKitWave(
+    itemBuilder: (BuildContext context, int index) {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: index.isEven ? Colors.yellow[200] : Colors.grey,
+        ),
+      );
+    },
+  );
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     this.getvalue();
-
   }
 
-  //
-  // var name = [
-  //   "Ratatouille (2007)",
-  //   "Monsters, Inc. (2001)",
-  //   "Space Jam (1996)",
-  //   "Inside Out (2015) ",
-  // ];
-  // var video_link = [
-  //   "http://ftp5.circleftp.net/FILE/Animation%20Movies/2007/Ratatouille.2007.1080p.BluRay.H264.AAC-RARBG/Ratatouille.2007.1080p.BluRay.H264.AAC-RARBG.mp4",
-  //   "http://ftp5.circleftp.net/FILE/Animation%20Movies/2001/Monsters.Inc.2001.PROPER.1080p.BluRay.H264.AAC-RARBG/Monsters.Inc.2001.PROPER.1080p.BluRay.H264.AAC-RARBG.mp4",
-  //   "http://ftp5.circleftp.net/FILE/Animation%20Movies/2000%20%26%20Before/Space.Jam.1996.1080p.BluRay.H264.AAC-RARBG/Space.Jam.1996.1080p.BluRay.H264.AAC-RARBG.mp4",
-  //   "http://ftp5.circleftp.net/FILE/Animation%20Movies/2015/Inside.Out.2015.1080p.BluRay.H264.AAC-RARBG/Inside.Out.2015.1080p.BluRay.H264.AAC-RARBG.mp4",
-  // ];
-  // var imaje_link = [
-  //   "http://circleftp.net/wp-content/uploads/2020/12/MV5BMTMzODU0NTkxMF5BMl5BanBnXkFtZTcwMjQ4MzMzMw@@._V1_.jpg",
-  //   "http://circleftp.net/wp-content/uploads/2020/12/MV5BMTY1NTI0ODUyOF5BMl5BanBnXkFtZTgwNTEyNjQ0MDE@._V1_.jpg",
-  //   "http://circleftp.net/wp-content/uploads/2020/12/MV5BMDgyZTI2YmYtZmI4ZC00MzE0LWIxZWYtMWRlZWYxNjliNTJjXkEyXkFqcGdeQXVyNjY5NDU4NzI@._V1_.jpg",
-  //   "http://circleftp.net/wp-content/uploads/2020/12/MV5BOTgxMDQwMDk0OF5BMl5BanBnXkFtZTgwNjU5OTg2NDE@._V1_-202x300.jpg",
-  // ];
-  // var j=0;
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _controller.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-
+    var h=MediaQuery.of(context).size.height;
+    var w=MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text("Video Player"),
+        title: Text("Circle FTP"),
+        centerTitle: true,
+        backgroundColor: Colors.black,
       ),
-      body: Container(
-        color: Colors.deepPurpleAccent[50],
-        child: ListView.builder(
+      body: ListView(
+        children: [
+          Container(
+            child: TextField(
+              style: TextStyle(color: Colors.white),
 
-            physics: ClampingScrollPhysics(),
-            shrinkWrap: true,
-            scrollDirection: Axis.vertical,
-            itemCount: data20191==null?0:data20191.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Padding(
-                padding: EdgeInsets.only(left: 8.0),
-                child: Column(
-                  children: [
-                    Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(data20191[index]["category"].toString()),
-                      ),
-                    ),
-
-                    Container(
-                      height: 380,
-                      width: double.infinity,
-
-                      child: ListView.builder(
-                          physics: ClampingScrollPhysics(),
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: data20191[index]["movies"]==null?0:data20191[index]["movies"].length,
-                          itemBuilder: (BuildContext context, int inde) {
-                            return InkWell(
-                              onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>Playvideo(name: data20191[index]["movies"][inde]["name"].toString(),url: data20191[index]["movies"][inde]["media"].toString(),)));
-                              },
-                              child: Container(
-                                //height: 380,
-                               // width: MediaQuery.of(context).size.width * .5,
-                               //  child: Image.network(
-                               //    data20191[index]["movies"][inde]["banner"].toString(),
-                               //    //height: MediaQuery.of(context).size.height*.3,
-                               //    fit: BoxFit.cover,
-                               //  ),
-                               //  child: CachedNetworkImage(
-                               //    imageUrl: data20191[index]["movies"][inde]["banner"].toString(),
-                               //    placeholder: (context, url) => CircularProgressIndicator(),
-                               //    errorWidget: (context, url, error) => Icon(Icons.error),
-                               //  ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: CachedNetworkImage(
-                                    fit: BoxFit.cover,
-
-                                    imageUrl: data20191[index]["movies"][inde]["banner"].toString(),
-                                    progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                    CircularProgressIndicator(value: downloadProgress.progress,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.limeAccent[700],),
-                                      backgroundColor: Colors.cyan,
-                                    ),
-                                    errorWidget: (context, url, error) => Icon(Icons.error),
-                                  ),
-                                ),
-                              ),
-
-                            );
-                          }),
-                    ),
-                  ],
+              cursorColor: Colors.white,
+              onChanged: (text) {
+                name = text;
+              },
+              controller: _controller,
+              obscureText: false,
+              decoration: InputDecoration(
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(25)),
+                    borderSide: BorderSide(color: Colors.white)
                 ),
-              );
-            }),
+                border: OutlineInputBorder(),
+                //labelText: 'Movie Name',
+                hintText: "Search Movie",
+                hintStyle: TextStyle(fontSize: w/20,color: Colors.white),
+                suffixIcon: InkWell(
+                  child: Icon(Icons.search,color: Colors.white,),
+                  onTap: () {
+                    if (name.length > 0) {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => Search(movie_name: name,)));
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
+          Container(
+            color: Colors.deepPurpleAccent[50],
+            child: ListView.builder(
+                physics: ClampingScrollPhysics(),
+                shrinkWrap: true,
+                scrollDirection: Axis.vertical,
+                itemCount: data20191 == null ? 0 : catagori.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Padding(
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: Column(
+                      children: [
+                        Container(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child:
+                                Text(catagori[index].toString(),style: TextStyle(fontSize: w/20,fontWeight: FontWeight.bold,color: Colors.white),),
+                          ),
+                        ),
+                        Container(
+                          height: 200,
+                          width: double.infinity,
+                          child: ListView.builder(
+                              physics: ClampingScrollPhysics(),
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: data20191[index]["movies"] == null ? 0 : data20191[index]["movies"].length,
+                              itemBuilder: (BuildContext context, int inde) {
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Playvideo(name: data20191[index]["movies"][inde]["name"].toString(),
+                                                                            url: data20191[index]["movies"][inde]["media"].toString(),
+                                                )));
+                                  },
+                                  child: Container(
+                                    height: 200,
+                                    width:
+                                        MediaQuery.of(context).size.width * .4,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        imageUrl: data20191[index]["movies"][inde]["banner"].toString(),
+                                        progressIndicatorBuilder:
+                                            (context, url, downloadProgress) =>
+                                                Center(
+                                                  child: spinkit,
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            Icon(Icons.error),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+          ),
+        ],
       ),
     );
   }
