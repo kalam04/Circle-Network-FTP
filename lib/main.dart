@@ -1512,6 +1512,432 @@
 //
 //
 //
+//
+// import 'package:flutter/material.dart';
+// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+//
+//
+//
+// void main(){
+//   runApp(MaterialApp(home: ExampleVideo(),));
+// }
+//
+// class ExampleVideo extends StatefulWidget {
+//   @override
+//   _ExampleVideoState createState() => _ExampleVideoState();
+// }
+//
+// class _ExampleVideoState extends State<ExampleVideo> {
+//   final String urlToStreamVideo = 'http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_60fps_normal.mp4';
+//   final VlcPlayerController controller = new VlcPlayerController(
+//     // Start playing as soon as the video is loaded.
+//
+//   );
+//   final int playerWidth = 640;
+//   final int playerHeight = 360;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//         body: SizedBox(
+//             height: 644,
+//             width: 360,
+//             child: new VlcPlayer(
+//               aspectRatio: 16 / 9,
+//               url: urlToStreamVideo,
+//               controller: controller,
+//               placeholder: Center(child: CircularProgressIndicator()),
+//             )
+//         )
+//     );
+//   }
+// }
+
+
+//
+// import 'dart:typed_data';
+//
+// import 'package:flutter/material.dart';
+// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+//
+// void main() => runApp(MyApp());
+//
+// class MyApp extends StatefulWidget {
+//   @override
+//   _MyAppState createState() => new _MyAppState();
+// }
+//
+// class _MyAppState extends State<MyApp> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return new MaterialApp(home: MyAppScaffold());
+//   }
+// }
+//
+// class MyAppScaffold extends StatefulWidget {
+//   @override
+//   State<StatefulWidget> createState() => MyAppScaffoldState();
+// }
+//
+// class MyAppScaffoldState extends State<MyAppScaffold> {
+//   String initUrl =
+//       "http://index.circleftp.net/FILE/English%20Movies/2013/The%20Wolverine%20%282013%29%201080p%20EXTENDED%20BluRay%20x264/The%20Wolverine%20%282013%29%201080p%20EXTENDED%20BluRay%20x264.mkv";
+//
+//
+//   String changeUrl =
+//       "http://index.circleftp.net/FILE/English%20Movies/2013/A.Teacher.2013.1080p.WEBRip.x264-RARBG/A.Teacher.2013.1080p.WEBRip.x264-RARBG.mp4";
+//
+//   Uint8List image;
+//   VlcPlayerController _videoViewController;
+//   bool isPlaying = true;
+//   double sliderValue = 0.0;
+//   double currentPlayerTime = 0;
+//   double volumeValue = 100;
+//   String position = "";
+//   String duration = "";
+//   int numberOfCaptions = 0;
+//   int numberOfAudioTracks = 0;
+//   bool isBuffering = true;
+//   bool getCastDeviceBtnEnabled = false;
+//
+//   var _scaffoldKey = new GlobalKey<ScaffoldState>();
+//   @override
+//   void initState() {
+//     _videoViewController = new VlcPlayerController(onInit: () {
+//       _videoViewController.play();
+//     });
+//     _videoViewController.addListener(() {
+//       if (!this.mounted) return;
+//       if (_videoViewController.initialized) {
+//         var oPosition = _videoViewController.position;
+//         var oDuration = _videoViewController.duration;
+//         if (oDuration.inHours == 0) {
+//           var strPosition = oPosition.toString().split('.')[0];
+//           var strDuration = oDuration.toString().split('.')[0];
+//           position =
+//           "${strPosition.split(':')[1]}:${strPosition.split(':')[2]}";
+//           duration =
+//           "${strDuration.split(':')[1]}:${strDuration.split(':')[2]}";
+//         } else {
+//           position = oPosition.toString().split('.')[0];
+//           duration = oDuration.toString().split('.')[0];
+//         }
+//         sliderValue = _videoViewController.position.inSeconds.toDouble();
+//         numberOfCaptions = _videoViewController.spuTracksCount;
+//         numberOfAudioTracks = _videoViewController.audioTracksCount;
+//
+//         switch (_videoViewController.playingState) {
+//           case PlayingState.PAUSED:
+//             setState(() {
+//               isBuffering = false;
+//             });
+//             break;
+//
+//           case PlayingState.STOPPED:
+//             setState(() {
+//               isPlaying = false;
+//               isBuffering = false;
+//             });
+//             break;
+//           case PlayingState.BUFFERING:
+//             setState(() {
+//               isBuffering = true;
+//             });
+//             break;
+//           case PlayingState.PLAYING:
+//             setState(() {
+//               isBuffering = false;
+//             });
+//             break;
+//           case PlayingState.ERROR:
+//             setState(() {});
+//             print("VLC encountered error");
+//             break;
+//           default:
+//             setState(() {});
+//             break;
+//         }
+//       }
+//     });
+//     super.initState();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return new Scaffold(
+//       key: _scaffoldKey,
+//       appBar: new AppBar(
+//         title: const Text('Plugin example app'),
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         child: Icon(Icons.camera),
+//         onPressed: _createCameraImage,
+//       ),
+//       body: Builder(builder: (context) {
+//         return Container(
+//           padding: EdgeInsets.all(10),
+//           child: ListView(
+//             shrinkWrap: true,
+//             children: <Widget>[
+//               SizedBox(
+//                 height: 250,
+//                 child: new VlcPlayer(
+//                   aspectRatio: 16 / 9,
+//                   url: initUrl,
+//                   isLocalMedia: false,
+//                   controller: _videoViewController,
+//                   // Play with vlc options
+//                   options: [
+//                     '--quiet',
+// //                '-vvv',
+//                     '--no-drop-late-frames',
+//                     '--no-skip-frames',
+//                     '--rtsp-tcp',
+//                   ],
+//                   hwAcc: HwAcc.DISABLED,
+//                   // or {HwAcc.AUTO, HwAcc.DECODING, HwAcc.FULL}
+//                   placeholder: Container(
+//                     height: 250.0,
+//                     child: Row(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: <Widget>[CircularProgressIndicator()],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//               Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                 mainAxisSize: MainAxisSize.max,
+//                 children: [
+//                   Flexible(
+//                     flex: 1,
+//                     child: FlatButton(
+//                         child: isPlaying
+//                             ? Icon(Icons.pause_circle_outline)
+//                             : Icon(Icons.play_circle_outline),
+//                         onPressed: () => {playOrPauseVideo()}),
+//                   ),
+//                   Flexible(
+//                     flex: 3,
+//                     child: Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                       mainAxisSize: MainAxisSize.max,
+//                       children: [
+//                         Text(position),
+//                         Expanded(
+//                           child: Slider(
+//                             activeColor: Colors.red,
+//                             value: sliderValue,
+//                             min: 0.0,
+//                             max: _videoViewController.duration == null
+//                                 ? (sliderValue + 1)
+//                                 : _videoViewController.duration.inSeconds
+//                                 .toDouble(),
+//                             onChanged: (progress) {
+//                               setState(() {
+//                                 sliderValue = progress.floor().toDouble();
+//                               });
+//                               //convert to Milliseconds since VLC requires MS to set time
+//                               _videoViewController
+//                                   .setTime(sliderValue.toInt() * 1000);
+//                             },
+//                           ),
+//                         ),
+//                         Text(duration),
+//                       ],
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//               Divider(height: 1),
+//               Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                 mainAxisSize: MainAxisSize.max,
+//                 children: [
+//                   Text("Volume Level"),
+//                   Slider(
+//                     min: 0,
+//                     max: 100,
+//                     value: volumeValue,
+//                     onChanged: (value) {
+//                       setState(() {
+//                         volumeValue = value;
+//                       });
+//                       _videoViewController.setVolume(volumeValue.toInt());
+//                     },
+//                   ),
+//                 ],
+//               ),
+//               Divider(height: 1),
+//               Row(
+//                 children: [
+//                   FlatButton(
+//                     child: Text("Change URL"),
+//                     onPressed: () =>
+//                         _videoViewController.setStreamUrl(changeUrl),
+//                   ),
+//                 ],
+//               ),
+//               Divider(height: 1),
+//
+//               Row(
+//                 mainAxisSize: MainAxisSize.max,
+//                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                 children: [
+//                   RaisedButton(
+//                     child: Text('Get Subtitle Tracks'),
+//                     onPressed: () {
+//                       _getSubtitleTracks();
+//                     },
+//                   ),
+//                   RaisedButton(
+//                     child: Text('Get Audio Tracks'),
+//                     onPressed: () {
+//                       _getAudioTracks();
+//                     },
+//                   )
+//                 ],
+//               ),
+//
+//             ],
+//           ),
+//         );
+//       }),
+//     );
+//   }
+//
+//   @override
+//   void dispose() {
+//     _videoViewController.dispose();
+//     super.dispose();
+//   }
+//
+//   void playOrPauseVideo() {
+//     String state = _videoViewController.playingState.toString();
+//
+//     if (state == "PlayingState.PLAYING") {
+//       _videoViewController.pause();
+//       setState(() {
+//         isPlaying = false;
+//       });
+//     } else {
+//       _videoViewController.play();
+//       setState(() {
+//         isPlaying = true;
+//       });
+//     }
+//   }
+//
+//   void _getSubtitleTracks() async {
+//     if (_videoViewController.playingState.toString() != "PlayingState.PLAYING")
+//       return;
+//
+//     Map<dynamic, dynamic> subtitleTracks =
+//     await _videoViewController.getSpuTracks();
+//     //
+//     if (subtitleTracks != null && subtitleTracks.length > 0) {
+//       int selectedSubId = await showDialog(
+//         context: context,
+//         builder: (BuildContext context) {
+//           return AlertDialog(
+//             title: Text("Select Subtitle"),
+//             content: Container(
+//               width: double.maxFinite,
+//               height: 250,
+//               child: ListView.builder(
+//                 itemCount: subtitleTracks.keys.length + 1,
+//                 itemBuilder: (context, index) {
+//                   return ListTile(
+//                     title: Text(
+//                       index < subtitleTracks.keys.length
+//                           ? subtitleTracks.values.elementAt(index).toString()
+//                           : 'Disable',
+//                     ),
+//                     onTap: () {
+//                       Navigator.pop(
+//                         context,
+//                         index < subtitleTracks.keys.length
+//                             ? subtitleTracks.keys.elementAt(index)
+//                             : -1,
+//                       );
+//                     },
+//                   );
+//                 },
+//               ),
+//             ),
+//           );
+//         },
+//       );
+//       if (selectedSubId != null)
+//         await _videoViewController.setSpuTrack(selectedSubId);
+//     }
+//   }
+//
+//   void _getAudioTracks() async {
+//     if (_videoViewController.playingState.toString() != "PlayingState.PLAYING")
+//       return;
+//
+//     Map<dynamic, dynamic> audioTracks =
+//     await _videoViewController.getAudioTracks();
+//     //
+//     if (audioTracks != null && audioTracks.length > 0) {
+//       int selectedAudioTrackId = await showDialog(
+//         context: context,
+//         builder: (BuildContext context) {
+//           return AlertDialog(
+//             title: Text("Select Audio"),
+//             content: Container(
+//               width: double.maxFinite,
+//               height: 250,
+//               child: ListView.builder(
+//                 itemCount: audioTracks.keys.length + 1,
+//                 itemBuilder: (context, index) {
+//                   return ListTile(
+//                     title: Text(
+//                       index < audioTracks.keys.length
+//                           ? audioTracks.values.elementAt(index).toString()
+//                           : 'Disable',
+//                     ),
+//                     onTap: () {
+//                       Navigator.pop(
+//                         context,
+//                         index < audioTracks.keys.length
+//                             ? audioTracks.keys.elementAt(index)
+//                             : -1,
+//                       );
+//                     },
+//                   );
+//                 },
+//               ),
+//             ),
+//           );
+//         },
+//       );
+//       if (selectedAudioTrackId != null)
+//         await _videoViewController.setAudioTrack(selectedAudioTrackId);
+//     }
+//   }
+//
+//
+//
+//   void _createCameraImage() async {
+//     Uint8List file = await _videoViewController.takeSnapshot();
+//     setState(() {
+//       image = file;
+//     });
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
 
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -1521,6 +1947,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 
 import 'Search.dart';
+import 'VlcPlayer.dart';
 
 void main() {
 
@@ -1696,12 +2123,16 @@ class _SamplePlayerState extends State<SamplePlayer> {
                               itemBuilder: (BuildContext context, int inde) {
                                 return InkWell(
                                   onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Playvideo(name: data20191[index]["movies"][inde]["name"].toString(),
-                                                                            url: data20191[index]["movies"][inde]["media"].toString(),
-                                                )));
+                                   // Navigator.push(
+                                   //      context,
+                                   //      MaterialPageRoute(
+                                   //          builder: (context) => Playvideo(name: data20191[index]["movies"][inde]["name"].toString(),
+                                   //                                          url: data20191[index]["movies"][inde]["media"].toString(),
+                                   //                                          Cat_id: index,
+                                   //                                          id: inde,
+                                   //                                          data: data20191,
+                                   //              )));
+                                   Navigator.push(context, MaterialPageRoute(builder: (context)=>MyAppScaffold(url: data20191[index]["movies"][inde]["media"].toString(),)));
                                   },
                                   child: Container(
                                     height: 200,
@@ -1735,3 +2166,4 @@ class _SamplePlayerState extends State<SamplePlayer> {
     );
   }
 }
+
