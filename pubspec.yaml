@@ -26,7 +26,7 @@ dependencies:
   provider: ^4.3.2+3
   flutter_svg:
   video_player:
-  flick_video_player:
+  flick_video_player: ^0.1.1
   http:
   cached_network_image:
   flutter_vlc_player: ^4.0.3
