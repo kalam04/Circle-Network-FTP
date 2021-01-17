@@ -1946,6 +1946,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 
+import 'Better.dart';
 import 'Search.dart';
 import 'VlcPlayer.dart';
 
@@ -2123,16 +2124,9 @@ class _SamplePlayerState extends State<SamplePlayer> {
                               itemBuilder: (BuildContext context, int inde) {
                                 return InkWell(
                                   onTap: () {
-                                   // Navigator.push(
-                                   //      context,
-                                   //      MaterialPageRoute(
-                                   //          builder: (context) => Playvideo(name: data20191[index]["movies"][inde]["name"].toString(),
-                                   //                                          url: data20191[index]["movies"][inde]["media"].toString(),
-                                   //                                          Cat_id: index,
-                                   //                                          id: inde,
-                                   //                                          data: data20191,
-                                   //              )));
-                                   Navigator.push(context, MaterialPageRoute(builder: (context)=>MyAppScaffold(url: data20191[index]["movies"][inde]["media"].toString(),)));
+                                  // Navigator.push(context, MaterialPageRoute(builder: (context) => Playvideo(name: data20191[index]["movies"][inde]["name"].toString(), url: data20191[index]["movies"][inde]["media"].toString(), Cat_id: index, id: inde, data: data20191,)));
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>MyAppScaffold(url: data20191[index]["movies"][inde]["media"].toString(),)));
+                                    //Navigator.push(context, MaterialPageRoute(builder: (context) => Better(name: data20191[index]["movies"][inde]["name"].toString(), url: data20191[index]["movies"][inde]["media"].toString(), Cat_id: index, id: inde, data: data20191,)));
                                   },
                                   child: Container(
                                     height: 200,
