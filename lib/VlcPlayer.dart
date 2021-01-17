@@ -36,6 +36,7 @@ class MyAppScaffoldState extends State<MyAppScaffold> {
   bool getCastDeviceBtnEnabled = false;
   var h=250.0;
   var fullscreen=false;
+  var isTransparent=false;
 
   var _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -109,10 +110,7 @@ class MyAppScaffoldState extends State<MyAppScaffold> {
         appBar: new AppBar(
           title: const Text('Plugin example app'),
         ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.camera),
-          onPressed: _createCameraImage,
-        ),
+
         body: Builder(builder: (context) {
           return Container(
 
@@ -136,77 +134,84 @@ class MyAppScaffoldState extends State<MyAppScaffold> {
                     ],
                     hwAcc: HwAcc.DISABLED,
                     // or {HwAcc.AUTO, HwAcc.DECODING, HwAcc.FULL}
-                    placeholder: Container(
-                      height: h,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[CircularProgressIndicator()],
-                      ),
-                    ),
+
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Flexible(
-                      flex: 1,
-                      child: FlatButton(
-                          child: isPlaying
-                              ? Icon(Icons.pause_circle_outline)
-                              : Icon(Icons.play_circle_outline),
-                          onPressed: () => {playOrPauseVideo()}),
-                    ),
-                    Flexible(
-                      flex: 3,
+                InkWell(
+                  onTap: (){
+                    setState(() {
+                      isTransparent=!isTransparent;
+                    });
+                  },
+                  child: IgnorePointer(
+                    ignoring: isTransparent,
+                    child: Opacity(
+                      opacity: isTransparent ? 0:1,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text(position),
-                          Expanded(
-                            child: Slider(
-                              activeColor: Colors.red,
-                              value: sliderValue,
-                              min: 0.0,
-                              max: _videoViewController.duration == null
-                                  ? (sliderValue + 1)
-                                  : _videoViewController.duration.inSeconds
-                                  .toDouble(),
-                              onChanged: (progress) {
-                                setState(() {
-                                  sliderValue = progress.floor().toDouble();
-                                });
-                                //convert to Milliseconds since VLC requires MS to set time
-                                _videoViewController
-                                    .setTime(sliderValue.toInt() * 1000);
-                              },
-                            ),
+                          Flexible(
+                            flex: 1,
+                            child: FlatButton(
+                                child: isPlaying
+                                    ? Icon(Icons.pause_circle_outline)
+                                    : Icon(Icons.play_circle_outline),
+                                onPressed: () => {playOrPauseVideo()}),
                           ),
-                          Text(duration),
-                          FlatButton(
-                            onPressed: () {
-                              if(fullscreen==false){
-                                setState(() {
+                          Flexible(
+                            flex: 3,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Text(position),
+                                Expanded(
+                                  child: Slider(
+                                    activeColor: Colors.red,
+                                    value: sliderValue,
+                                    min: 0.0,
+                                    max: _videoViewController.duration == null
+                                        ? (sliderValue + 1)
+                                        : _videoViewController.duration.inSeconds
+                                        .toDouble(),
+                                    onChanged: (progress) {
+                                      setState(() {
+                                        sliderValue = progress.floor().toDouble();
+                                      });
+                                      //convert to Milliseconds since VLC requires MS to set time
+                                      _videoViewController
+                                          .setTime(sliderValue.toInt() * 1000);
+                                    },
+                                  ),
+                                ),
+                                Text(duration),
+                                FlatButton(
+                                  onPressed: () {
+                                    if(fullscreen==false){
+                                      setState(() {
 
-                                  h=MediaQuery.of(context).size.height;
+                                        h=MediaQuery.of(context).size.height;
 
-                                  fullscreen=true;
-                                });
-                              }else{
-                                setState(() {
-                                  h=250.0;
-                                  fullscreen=false;
-                                });
-                              }
+                                        fullscreen=true;
+                                      });
+                                    }else{
+                                      setState(() {
+                                        h=250.0;
+                                        fullscreen=false;
+                                      });
+                                    }
 
-                            },
-                            child: fullscreen? Icon(Icons.fullscreen_exit):Icon(Icons.fullscreen),
+                                  },
+                                  child: fullscreen? Icon(Icons.fullscreen_exit):Icon(Icons.fullscreen),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
                 Divider(height: .1),
 
@@ -253,135 +258,149 @@ class MyAppScaffoldState extends State<MyAppScaffold> {
           title: const Text('Plugin example app'),
         ),
         body: Builder(builder: (context) {
-          return Container(
+          return InkWell(
+            onTap: (){
+              setState(() {
+                isTransparent=!isTransparent;
+              });
+            },
+            child: Container(
 
-            child: ListView(
-              shrinkWrap: true,
-              children: <Widget>[
-                SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: new VlcPlayer(
-                    aspectRatio: 16 / 9,
-                    url: widget.url.toString(),
-                    isLocalMedia: false,
-                    controller: _videoViewController,
-                    // Play with vlc options
-                    options: [
-                      '--quiet',
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: new VlcPlayer(
+                      aspectRatio: 16 / 9,
+                      url: widget.url.toString(),
+                      isLocalMedia: false,
+                      controller: _videoViewController,
+                      // Play with vlc options
+                      options: [
+                        '--quiet',
 //                '-vvv',
-                      '--no-drop-late-frames',
-                      '--no-skip-frames',
-                      '--rtsp-tcp',
-                    ],
-                    hwAcc: HwAcc.DISABLED,
-                    // or {HwAcc.AUTO, HwAcc.DECODING, HwAcc.FULL}
-                    placeholder: Container(
-                      height: MediaQuery.of(context).size.height-MediaQuery.of(context).padding.top,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[CircularProgressIndicator()],
+                        '--no-drop-late-frames',
+                        '--no-skip-frames',
+                        '--rtsp-tcp',
+                      ],
+                      hwAcc: HwAcc.DISABLED,
+                      // or {HwAcc.AUTO, HwAcc.DECODING, HwAcc.FULL}
+
+                    ),
+                  ),
+                  InkWell(
+                    onTap: (){
+                      setState(() {
+                        isTransparent=!isTransparent;
+                      });
+                    },
+                    child: IgnorePointer(
+                      ignoring: isTransparent,
+                      child: Opacity(
+                        opacity: isTransparent ? 0 : 1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Flexible(
+                              flex: 1,
+                              child: FlatButton(
+                                  child: isPlaying
+                                      ? Icon(Icons.pause_circle_outline)
+                                      : Icon(Icons.play_circle_outline),
+                                  onPressed: () => {playOrPauseVideo()}),
+                            ),
+                            Flexible(
+                              flex: 3,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Text(position),
+                                  Expanded(
+                                    child: Slider(
+                                      activeColor: Colors.red,
+                                      value: sliderValue,
+                                      min: 0.0,
+                                      max: _videoViewController.duration == null
+                                          ? (sliderValue + 1)
+                                          : _videoViewController.duration.inSeconds
+                                          .toDouble(),
+                                      onChanged: (progress) {
+                                        setState(() {
+                                          sliderValue = progress.floor().toDouble();
+                                        });
+                                        //convert to Milliseconds since VLC requires MS to set time
+                                        _videoViewController
+                                            .setTime(sliderValue.toInt() * 1000);
+                                      },
+                                    ),
+                                  ),
+                                  Text(duration),
+                                  FlatButton(
+                                    onPressed: () {
+
+                                      if(fullscreen==false){
+                                        setState(() {
+
+
+                                          SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+                                          fullscreen=true;
+                                        });
+                                      }else{
+                                        setState(() {
+
+                                          fullscreen=false;
+                                        });
+                                      }
+
+                                    },
+                                    child: fullscreen? Icon(Icons.fullscreen_exit):Icon(Icons.fullscreen),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Flexible(
-                      flex: 1,
-                      child: FlatButton(
-                          child: isPlaying
-                              ? Icon(Icons.pause_circle_outline)
-                              : Icon(Icons.play_circle_outline),
-                          onPressed: () => {playOrPauseVideo()}),
-                    ),
-                    Flexible(
-                      flex: 3,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Text(position),
-                          Expanded(
-                            child: Slider(
-                              activeColor: Colors.red,
-                              value: sliderValue,
-                              min: 0.0,
-                              max: _videoViewController.duration == null
-                                  ? (sliderValue + 1)
-                                  : _videoViewController.duration.inSeconds
-                                  .toDouble(),
-                              onChanged: (progress) {
-                                setState(() {
-                                  sliderValue = progress.floor().toDouble();
-                                });
-                                //convert to Milliseconds since VLC requires MS to set time
-                                _videoViewController
-                                    .setTime(sliderValue.toInt() * 1000);
-                              },
-                            ),
-                          ),
-                          Text(duration),
-                          FlatButton(
-                            onPressed: () {
+                  Divider(height: .1),
 
-                              if(fullscreen==false){
-                                setState(() {
+                  // Row(
+                  //   children: [
+                  //     FlatButton(
+                  //       child: Text("Change URL"),
+                  //       onPressed: () =>
+                  //           _videoViewController.setStreamUrl(changeUrl),
+                  //     ),
+                  //   ],
+                  // ),
+                  // Divider(height: 1),
 
-
-                                  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-                                  fullscreen=true;
-                                });
-                              }else{
-                                setState(() {
-
-                                  fullscreen=false;
-                                });
-                              }
-
-                            },
-                            child: fullscreen? Icon(Icons.fullscreen_exit):Icon(Icons.fullscreen),
-                          ),
-                        ],
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      RaisedButton(
+                        child: Text('Get Subtitle Tracks'),
+                        onPressed: () {
+                          _getSubtitleTracks();
+                        },
                       ),
-                    ),
-                  ],
-                ),
-                Divider(height: .1),
-
-                // Row(
-                //   children: [
-                //     FlatButton(
-                //       child: Text("Change URL"),
-                //       onPressed: () =>
-                //           _videoViewController.setStreamUrl(changeUrl),
-                //     ),
-                //   ],
-                // ),
-                // Divider(height: 1),
-
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    RaisedButton(
-                      child: Text('Get Subtitle Tracks'),
-                      onPressed: () {
-                        _getSubtitleTracks();
-                      },
-                    ),
-                    RaisedButton(
-                      child: Text('Get Audio Tracks'),
-                      onPressed: () {
-                        _getAudioTracks();
-                      },
-                    )
-                  ],
-                ),
+                      RaisedButton(
+                        child: Text('Get Audio Tracks'),
+                        onPressed: () {
+                          _getAudioTracks();
+                        },
+                      )
+                    ],
+                  ),
 
 
-              ],
+                ],
+              ),
             ),
           );
         }),
