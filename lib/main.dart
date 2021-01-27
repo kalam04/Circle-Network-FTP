@@ -1929,8 +1929,931 @@
 // }
 
 
-
-
+//
+//
+// import 'dart:async';
+// import 'dart:typed_data';
+//
+// import 'package:circle_network_ftp/VlcPlayer.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+//
+//
+// void main(){
+//   runApp(MaterialApp(home: MyApp(),));
+//
+// }
+//
+// class MyApp extends StatefulWidget {
+//   @override
+//   _MyAppState createState() => _MyAppState();
+// }
+//
+// class _MyAppState extends State<MyApp> {
+//
+//
+//   String changeUrl =
+//       "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4";
+//
+//   Uint8List image;
+//   VlcPlayerController _videoViewController;
+//   bool isPlaying = true;
+//   double sliderValue = 0.0;
+//   double currentPlayerTime = 0;
+//   double volumeValue = 100;
+//   String position = "";
+//   String duration = "";
+//   int numberOfCaptions = 0;
+//   int numberOfAudioTracks = 0;
+//   bool isBuffering = true;
+//   bool getCastDeviceBtnEnabled = false;
+//   var h=250.0;
+//   var fullscreen=false;
+//
+//   var _scaffoldKey = new GlobalKey<ScaffoldState>();
+//
+//
+//   @override
+//   void initState() {
+//     _videoViewController = new VlcPlayerController(onInit: () {
+//       _videoViewController.play();
+//     });
+//     _videoViewController.addListener(() {
+//       if (!this.mounted) return;
+//       if (_videoViewController.initialized) {
+//         var oPosition = _videoViewController.position;
+//         var oDuration = _videoViewController.duration;
+//         if (oDuration.inHours == 0) {
+//           var strPosition = oPosition.toString().split('.')[0];
+//           var strDuration = oDuration.toString().split('.')[0];
+//           position =
+//           "${strPosition.split(':')[1]}:${strPosition.split(':')[2]}";
+//           duration =
+//           "${strDuration.split(':')[1]}:${strDuration.split(':')[2]}";
+//         } else {
+//           position = oPosition.toString().split('.')[0];
+//           duration = oDuration.toString().split('.')[0];
+//         }
+//         sliderValue = _videoViewController.position.inSeconds.toDouble();
+//         numberOfCaptions = _videoViewController.spuTracksCount;
+//         numberOfAudioTracks = _videoViewController.audioTracksCount;
+//
+//         switch (_videoViewController.playingState) {
+//           case PlayingState.PAUSED:
+//             setState(() {
+//               isBuffering = false;
+//             });
+//             break;
+//
+//           case PlayingState.STOPPED:
+//             setState(() {
+//               isPlaying = false;
+//               isBuffering = false;
+//             });
+//             break;
+//           case PlayingState.BUFFERING:
+//             setState(() {
+//               isBuffering = true;
+//             });
+//             break;
+//           case PlayingState.PLAYING:
+//             setState(() {
+//               isBuffering = false;
+//             });
+//             break;
+//           case PlayingState.ERROR:
+//             setState(() {});
+//             print("VLC encountered error");
+//             break;
+//           default:
+//             setState(() {});
+//             break;
+//         }
+//       }
+//     });
+//     super.initState();
+//   }
+//
+// var isVisibility=false;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text("Stack"),
+//       ),
+//       body: InkWell(
+//         onTap: () {
+//           setState(() {
+//             isVisibility = true;
+//           });
+//
+//           Timer(Duration(seconds: 5), () {
+//             // 5s over, navigate to a new page
+//             setState(() {
+//               isVisibility = false;
+//             });
+//           });
+//         },
+//         child: ListView(children: [
+//           Container(
+//             height: 250,
+//
+//             color: Colors.transparent,
+//             child: Stack(
+//               children: <Widget>[
+//                 Positioned(
+//
+//
+//                   child: SizedBox(
+//                     height: h,
+//                     child: new VlcPlayer(
+//                       aspectRatio: 16 / 9,
+//                       url: changeUrl.toString(),
+//                       isLocalMedia: false,
+//                       controller: _videoViewController,
+//                       // Play with vlc options
+//                       options: [
+//                         '--quiet',
+// //                '-vvv',
+//                         '--no-drop-late-frames',
+//                         '--no-skip-frames',
+//                         '--rtsp-tcp',
+//                       ],
+//                       hwAcc: HwAcc.DISABLED,
+//                       // or {HwAcc.AUTO, HwAcc.DECODING, HwAcc.FULL}
+//                       placeholder: Container(
+//                         height: h,
+//                         child: Row(
+//                           mainAxisAlignment: MainAxisAlignment.center,
+//                           children: <Widget>[CircularProgressIndicator()],
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//                 Visibility(
+//                   visible: isVisibility,
+//                   child: Positioned(
+//
+//                     bottom: 0,
+//                     child: Container(
+//
+//                       width: MediaQuery.of(context).size.width,
+//                       color: Colors.white38,
+//                       child: Row(
+//                         mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                         mainAxisSize: MainAxisSize.max,
+//                         children: [
+//                           Flexible(
+//                             flex: 1,
+//                             child: FlatButton(
+//                                 child: isPlaying
+//                                     ? Icon(
+//                                         Icons.pause_circle_outline,
+//                                         color: Colors.blueGrey[900],
+//                                       )
+//                                     : Icon(Icons.play_circle_outline,
+//                                         color: Colors.cyan),
+//                                 onPressed: () => {playOrPauseVideo()}),
+//                           ),
+//                           Flexible(
+//                             flex: 3,
+//                             child: Row(
+//                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                               mainAxisSize: MainAxisSize.max,
+//                               children: [
+//                                 Text(position),
+//                                 Expanded(
+//                                   child: Slider(
+//                                     activeColor: Colors.lightBlue,
+//                                     value: sliderValue,
+//                                     min: 0.0,
+//                                     max: _videoViewController.duration == null
+//                                         ? (sliderValue + 1)
+//                                         : _videoViewController
+//                                             .duration.inSeconds
+//                                             .toDouble(),
+//                                     onChanged: (progress) {
+//                                       setState(() {
+//                                         sliderValue =
+//                                             progress.floor().toDouble();
+//                                       });
+//                                       //convert to Milliseconds since VLC requires MS to set time
+//                                       _videoViewController
+//                                           .setTime(sliderValue.toInt() * 1000);
+//                                     },
+//                                   ),
+//                                 ),
+//                                 Text(
+//                                   duration,
+//                                   style: TextStyle(color: Colors.black),
+//                                 ),
+//                                 FlatButton(
+//                                   onPressed: () {
+//                                     if (fullscreen == false) {
+//                                       setState(() {
+//                                         h = MediaQuery.of(context).size.height;
+//
+//                                         fullscreen = true;
+//                                       });
+//                                     } else {
+//                                       setState(() {
+//                                         h = 250.0;
+//                                         fullscreen = false;
+//                                       });
+//                                     }
+//                                   },
+//                                   child: fullscreen
+//                                       ? Icon(
+//                                           Icons.fullscreen_exit,
+//                                           color: Colors.grey,
+//                                         )
+//                                       : Icon(Icons.fullscreen,
+//                                           color: Colors.grey),
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//           Divider(height: .1),
+//
+//           // Row(
+//           //   children: [
+//           //     FlatButton(
+//           //       child: Text("Change URL"),
+//           //       onPressed: () =>
+//           //           _videoViewController.setStreamUrl(changeUrl),
+//           //     ),
+//           //   ],
+//           // ),
+//           // Divider(height: 1),
+//
+//           Row(
+//             mainAxisSize: MainAxisSize.max,
+//             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//             children: [
+//               RaisedButton(
+//                 child: Text('Get Subtitle Tracks'),
+//                 onPressed: () {
+//                   _getSubtitleTracks();
+//                 },
+//               ),
+//               RaisedButton(
+//                 child: Text('Get Audio Tracks'),
+//                 onPressed: () {
+//                   _getAudioTracks();
+//                 },
+//               )
+//             ],
+//           ),
+//         ]),
+//       ),
+//     );
+//   }
+//
+//   @override
+//   void dispose() {
+//     _videoViewController.dispose();
+//     super.dispose();
+//   }
+//
+//   void playOrPauseVideo() {
+//     String state = _videoViewController.playingState.toString();
+//
+//     if (state == "PlayingState.PLAYING") {
+//       _videoViewController.pause();
+//       setState(() {
+//         isPlaying = false;
+//       });
+//     } else {
+//       _videoViewController.play();
+//       setState(() {
+//         isPlaying = true;
+//       });
+//     }
+//   }
+//
+//   void _getSubtitleTracks() async {
+//     if (_videoViewController.playingState.toString() != "PlayingState.PLAYING")
+//       return;
+//
+//     Map<dynamic, dynamic> subtitleTracks =
+//     await _videoViewController.getSpuTracks();
+//     //
+//     if (subtitleTracks != null && subtitleTracks.length > 0) {
+//       int selectedSubId = await showDialog(
+//         context: context,
+//         builder: (BuildContext context) {
+//           return AlertDialog(
+//             title: Text("Select Subtitle"),
+//             content: Container(
+//               width: double.maxFinite,
+//               height: 250,
+//               child: ListView.builder(
+//                 itemCount: subtitleTracks.keys.length + 1,
+//                 itemBuilder: (context, index) {
+//                   return ListTile(
+//                     title: Text(
+//                       index < subtitleTracks.keys.length
+//                           ? subtitleTracks.values.elementAt(index).toString()
+//                           : 'Disable',
+//                     ),
+//                     onTap: () {
+//                       Navigator.pop(
+//                         context,
+//                         index < subtitleTracks.keys.length
+//                             ? subtitleTracks.keys.elementAt(index)
+//                             : -1,
+//                       );
+//                     },
+//                   );
+//                 },
+//               ),
+//             ),
+//           );
+//         },
+//       );
+//       if (selectedSubId != null)
+//         await _videoViewController.setSpuTrack(selectedSubId);
+//     }
+//   }
+//
+//   void _getAudioTracks() async {
+//     if (_videoViewController.playingState.toString() != "PlayingState.PLAYING")
+//       return;
+//
+//     Map<dynamic, dynamic> audioTracks =
+//     await _videoViewController.getAudioTracks();
+//     //
+//     if (audioTracks != null && audioTracks.length > 0) {
+//       int selectedAudioTrackId = await showDialog(
+//         context: context,
+//         builder: (BuildContext context) {
+//           return AlertDialog(
+//             title: Text("Select Audio"),
+//             content: Container(
+//               width: double.maxFinite,
+//               height: 250,
+//               child: ListView.builder(
+//                 itemCount: audioTracks.keys.length + 1,
+//                 itemBuilder: (context, index) {
+//                   return ListTile(
+//                     title: Text(
+//                       index < audioTracks.keys.length
+//                           ? audioTracks.values.elementAt(index).toString()
+//                           : 'Disable',
+//                     ),
+//                     onTap: () {
+//                       Navigator.pop(
+//                         context,
+//                         index < audioTracks.keys.length
+//                             ? audioTracks.keys.elementAt(index)
+//                             : -1,
+//                       );
+//                     },
+//                   );
+//                 },
+//               ),
+//             ),
+//           );
+//         },
+//       );
+//       if (selectedAudioTrackId != null)
+//         await _videoViewController.setAudioTrack(selectedAudioTrackId);
+//     }
+//   }
+//
+//
+//
+//   void _createCameraImage() async {
+//     Uint8List file = await _videoViewController.takeSnapshot();
+//     setState(() {
+//       image = file;
+//     });
+//   }
+// }
+//
+// import 'dart:typed_data';
+//
+// import 'package:flutter/material.dart';
+// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+//
+// void main() => runApp(MyApp());
+//
+// class MyApp extends StatefulWidget {
+//   @override
+//   _MyAppState createState() => new _MyAppState();
+// }
+//
+// class _MyAppState extends State<MyApp> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return new MaterialApp(home: MyAppScaffold());
+//   }
+// }
+//
+// class MyAppScaffold extends StatefulWidget {
+//   @override
+//   State<StatefulWidget> createState() => MyAppScaffoldState();
+// }
+//
+// class MyAppScaffoldState extends State<MyAppScaffold> {
+//   String initUrl =
+//       "http://index.circleftp.net/FILE/English%20Movies/2019/Already%20Gone%20%282019%29%20720p%20WEB-DL%20x264/Already%20Gone%20%282019%29%20720p%20WEB-DL%20x264.mkv";
+//
+// //  String initUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4";
+// //  String initUrl = "/storage/emulated/0/Download/Test.mp4";
+// //  String initUrl = "/sdcard/Download/Test.mp4";
+//
+//   String changeUrl =
+//       "http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4";
+//
+//   Uint8List image;
+//   VlcPlayerController _videoViewController;
+//   bool isPlaying = true;
+//   double sliderValue = 0.0;
+//   double currentPlayerTime = 0;
+//   double volumeValue = 100;
+//   String position = "";
+//   String duration = "";
+//   int numberOfCaptions = 0;
+//   int numberOfAudioTracks = 0;
+//   bool isBuffering = true;
+//   bool getCastDeviceBtnEnabled = false;
+//
+//   var _scaffoldKey = new GlobalKey<ScaffoldState>();
+//   @override
+//   void initState() {
+//     _videoViewController = new VlcPlayerController(onInit: () {
+//       _videoViewController.play();
+//     });
+//     _videoViewController.addListener(() {
+//       if (!this.mounted) return;
+//       if (_videoViewController.initialized) {
+//         var oPosition = _videoViewController.position;
+//         var oDuration = _videoViewController.duration;
+//         if (oDuration.inHours == 0) {
+//           var strPosition = oPosition.toString().split('.')[0];
+//           var strDuration = oDuration.toString().split('.')[0];
+//           position =
+//           "${strPosition.split(':')[1]}:${strPosition.split(':')[2]}";
+//           duration =
+//           "${strDuration.split(':')[1]}:${strDuration.split(':')[2]}";
+//         } else {
+//           position = oPosition.toString().split('.')[0];
+//           duration = oDuration.toString().split('.')[0];
+//         }
+//         sliderValue = _videoViewController.position.inSeconds.toDouble();
+//         numberOfCaptions = _videoViewController.spuTracksCount;
+//         numberOfAudioTracks = _videoViewController.audioTracksCount;
+//
+//         switch (_videoViewController.playingState) {
+//           case PlayingState.PAUSED:
+//             setState(() {
+//               isBuffering = false;
+//             });
+//             break;
+//
+//           case PlayingState.STOPPED:
+//             setState(() {
+//               isPlaying = false;
+//               isBuffering = false;
+//             });
+//             break;
+//           case PlayingState.BUFFERING:
+//             setState(() {
+//               isBuffering = true;
+//             });
+//             break;
+//           case PlayingState.PLAYING:
+//             setState(() {
+//               isBuffering = false;
+//             });
+//             break;
+//           case PlayingState.ERROR:
+//             setState(() {});
+//             print("VLC encountered error");
+//             break;
+//           default:
+//             setState(() {});
+//             break;
+//         }
+//       }
+//     });
+//     super.initState();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return new Scaffold(
+//       key: _scaffoldKey,
+//       appBar: new AppBar(
+//         title: const Text('Plugin example app'),
+//       ),
+//
+//       body: Builder(builder: (context) {
+//         return Container(
+//           padding: EdgeInsets.all(10),
+//           child: ListView(
+//             shrinkWrap: true,
+//             children: <Widget>[
+//               SizedBox(
+//                 height: 250,
+//                 child: new VlcPlayer(
+//                   aspectRatio: 16 / 9,
+//                   url: initUrl,
+//                   isLocalMedia: false,
+//                   controller: _videoViewController,
+//                   // Play with vlc options
+//                   options: [
+//                     '--quiet',
+// //                '-vvv',
+//                     '--no-drop-late-frames',
+//                     '--no-skip-frames',
+//                     '--rtsp-tcp',
+//                   ],
+//                   hwAcc: HwAcc.DISABLED,
+//                   // or {HwAcc.AUTO, HwAcc.DECODING, HwAcc.FULL}
+//                   placeholder: Container(
+//                     height: 250.0,
+//                     child: Row(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: <Widget>[CircularProgressIndicator()],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//               Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                 mainAxisSize: MainAxisSize.max,
+//                 children: [
+//                   Flexible(
+//                     flex: 1,
+//                     child: FlatButton(
+//                         child: isPlaying
+//                             ? Icon(Icons.pause_circle_outline)
+//                             : Icon(Icons.play_circle_outline),
+//                         onPressed: () => {playOrPauseVideo()}),
+//                   ),
+//                   Flexible(
+//                     flex: 3,
+//                     child: Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                       mainAxisSize: MainAxisSize.max,
+//                       children: [
+//                         Text(position),
+//                         Expanded(
+//                           child: Slider(
+//                             activeColor: Colors.red,
+//                             value: sliderValue,
+//                             min: 0.0,
+//                             max: _videoViewController.duration == null
+//                                 ? (sliderValue + 1)
+//                                 : _videoViewController.duration.inSeconds
+//                                 .toDouble(),
+//                             onChanged: (progress) {
+//                               setState(() {
+//                                 sliderValue = progress.floor().toDouble();
+//                               });
+//                               //convert to Milliseconds since VLC requires MS to set time
+//                               _videoViewController
+//                                   .setTime(sliderValue.toInt() * 1000);
+//                             },
+//                           ),
+//                         ),
+//                         Text(duration),
+//                       ],
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//               Divider(height: 1),
+//               Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                 mainAxisSize: MainAxisSize.max,
+//                 children: [
+//                   Text("Volume Level"),
+//                   Slider(
+//                     min: 0,
+//                     max: 100,
+//                     value: volumeValue,
+//                     onChanged: (value) {
+//                       setState(() {
+//                         volumeValue = value;
+//                       });
+//                       _videoViewController.setVolume(volumeValue.toInt());
+//                     },
+//                   ),
+//                 ],
+//               ),
+//               Divider(height: 1),
+//               Row(
+//                 children: [
+//                   FlatButton(
+//                     child: Text("Change URL"),
+//                     onPressed: () =>
+//                         _videoViewController.setStreamUrl(changeUrl),
+//                   ),
+//                   FlatButton(
+//                       child: Text("+speed"),
+//                       onPressed: () =>
+//                           _videoViewController.setPlaybackSpeed(4.0)),
+//                   FlatButton(
+//                       child: Text("Normal"),
+//                       onPressed: () =>
+//                           _videoViewController.setPlaybackSpeed(1)),
+//                   FlatButton(
+//                       child: Text("-speed"),
+//                       onPressed: () =>
+//                           _videoViewController.setPlaybackSpeed(0.5)),
+//                 ],
+//               ),
+//               Divider(height: 1),
+//               Container(
+//                 padding: EdgeInsets.all(8.0),
+//                 child: Column(
+//                   children: [
+//                     Text("position=" +
+//                         _videoViewController.position.inSeconds.toString() +
+//                         ", duration=" +
+//                         _videoViewController.duration.inSeconds.toString() +
+//                         ", speed=" +
+//                         _videoViewController.playbackSpeed.toString()),
+//                     Text(
+//                         "ratio=" + _videoViewController.aspectRatio.toString()),
+//                     Text("size=" +
+//                         _videoViewController.size.width.toString() +
+//                         "x" +
+//                         _videoViewController.size.height.toString()),
+//                     Text("state=" +
+//                         _videoViewController.playingState.toString()),
+//                   ],
+//                 ),
+//               ),
+//               Divider(height: 1),
+//               Row(
+//                 mainAxisSize: MainAxisSize.max,
+//                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                 children: [
+//                   RaisedButton(
+//                     child: Text('Get Subtitle Tracks'),
+//                     onPressed: () {
+//                       _getSubtitleTracks();
+//                     },
+//                   ),
+//                   RaisedButton(
+//                     child: Text('Get Audio Tracks'),
+//                     onPressed: () {
+//                       _getAudioTracks();
+//                     },
+//                   )
+//                 ],
+//               ),
+//               Divider(height: 1),
+//               Row(
+//                 mainAxisSize: MainAxisSize.max,
+//                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                 children: [
+//                   Flexible(
+//                     flex: 1,
+//                     child: RaisedButton(
+//                       padding: EdgeInsets.all(5),
+//                       child: Text(
+//                         'Discover Cast Devices',
+//                         style: TextStyle(fontSize: 12),
+//                         textAlign: TextAlign.center,
+//                       ),
+//                       onPressed: () async {
+//                         await _videoViewController.startCastDiscovery();
+//                         _scaffoldKey.currentState.showSnackBar(
+//                             SnackBar(content: Text("Cast Discovery Started")));
+//                         setState(() {
+//                           getCastDeviceBtnEnabled = true;
+//                         });
+//                       },
+//                     ),
+//                   ),
+//                   Flexible(
+//                     flex: 1,
+//                     child: RaisedButton(
+//                       padding: EdgeInsets.all(5),
+//                       child: Text(
+//                         'Get Cast Devices',
+//                         style: TextStyle(fontSize: 12),
+//                         textAlign: TextAlign.center,
+//                       ),
+//                       onPressed: !getCastDeviceBtnEnabled
+//                           ? null
+//                           : () {
+//                         _getCastDevices();
+//                       },
+//                     ),
+//                   ),
+//                   Flexible(
+//                     flex: 1,
+//                     child: RaisedButton(
+//                       padding: EdgeInsets.all(5),
+//                       child: Text(
+//                         'Stop Discovery',
+//                         style: TextStyle(fontSize: 12),
+//                         textAlign: TextAlign.center,
+//                       ),
+//                       onPressed: () async {
+//                         await _videoViewController.stopCastDiscovery();
+//                         _scaffoldKey.currentState.showSnackBar(
+//                             SnackBar(content: Text("Cast Discovery Stopped")));
+//                         setState(() {
+//                           getCastDeviceBtnEnabled = false;
+//                         });
+//                       },
+//                     ),
+//                   )
+//                 ],
+//               ),
+//               Divider(height: 1),
+//               image == null
+//                   ? Container()
+//                   : Container(child: Image.memory(image)),
+//             ],
+//           ),
+//         );
+//       }),
+//     );
+//   }
+//
+//   @override
+//   void dispose() {
+//     _videoViewController.dispose();
+//     super.dispose();
+//   }
+//
+//   void playOrPauseVideo() {
+//     String state = _videoViewController.playingState.toString();
+//
+//     if (state == "PlayingState.PLAYING") {
+//       _videoViewController.pause();
+//       setState(() {
+//         isPlaying = false;
+//       });
+//     } else {
+//       _videoViewController.play();
+//       setState(() {
+//         isPlaying = true;
+//       });
+//     }
+//   }
+//
+//   void _getSubtitleTracks() async {
+//     if (_videoViewController.playingState.toString() != "PlayingState.PLAYING")
+//       return;
+//
+//     Map<dynamic, dynamic> subtitleTracks =
+//     await _videoViewController.getSpuTracks();
+//     //
+//     if (subtitleTracks != null && subtitleTracks.length > 0) {
+//       int selectedSubId = await showDialog(
+//         context: context,
+//         builder: (BuildContext context) {
+//           return AlertDialog(
+//             title: Text("Select Subtitle"),
+//             content: Container(
+//               width: double.maxFinite,
+//               height: 250,
+//               child: ListView.builder(
+//                 itemCount: subtitleTracks.keys.length + 1,
+//                 itemBuilder: (context, index) {
+//                   return ListTile(
+//                     title: Text(
+//                       index < subtitleTracks.keys.length
+//                           ? subtitleTracks.values.elementAt(index).toString()
+//                           : 'Disable',
+//                     ),
+//                     onTap: () {
+//                       Navigator.pop(
+//                         context,
+//                         index < subtitleTracks.keys.length
+//                             ? subtitleTracks.keys.elementAt(index)
+//                             : -1,
+//                       );
+//                     },
+//                   );
+//                 },
+//               ),
+//             ),
+//           );
+//         },
+//       );
+//       if (selectedSubId != null)
+//         await _videoViewController.setSpuTrack(selectedSubId);
+//     }
+//   }
+//
+//   void _getAudioTracks() async {
+//     if (_videoViewController.playingState.toString() != "PlayingState.PLAYING")
+//       return;
+//
+//     Map<dynamic, dynamic> audioTracks =
+//     await _videoViewController.getAudioTracks();
+//     //
+//     if (audioTracks != null && audioTracks.length > 0) {
+//       int selectedAudioTrackId = await showDialog(
+//         context: context,
+//         builder: (BuildContext context) {
+//           return AlertDialog(
+//             title: Text("Select Audio"),
+//             content: Container(
+//               width: double.maxFinite,
+//               height: 250,
+//               child: ListView.builder(
+//                 itemCount: audioTracks.keys.length + 1,
+//                 itemBuilder: (context, index) {
+//                   return ListTile(
+//                     title: Text(
+//                       index < audioTracks.keys.length
+//                           ? audioTracks.values.elementAt(index).toString()
+//                           : 'Disable',
+//                     ),
+//                     onTap: () {
+//                       Navigator.pop(
+//                         context,
+//                         index < audioTracks.keys.length
+//                             ? audioTracks.keys.elementAt(index)
+//                             : -1,
+//                       );
+//                     },
+//                   );
+//                 },
+//               ),
+//             ),
+//           );
+//         },
+//       );
+//       if (selectedAudioTrackId != null)
+//         await _videoViewController.setAudioTrack(selectedAudioTrackId);
+//     }
+//   }
+//
+//   void _getCastDevices() async {
+//     Map<dynamic, dynamic> castDevices =
+//     await _videoViewController.getCastDevices();
+//     //
+//     if (castDevices != null && castDevices.length > 0) {
+//       String selectedCastDeviceName = await showDialog(
+//         context: context,
+//         builder: (BuildContext context) {
+//           return AlertDialog(
+//             title: Text("Select Cast Device"),
+//             content: Container(
+//               width: double.maxFinite,
+//               height: 250,
+//               child: ListView.builder(
+//                 itemCount: castDevices.keys.length + 1,
+//                 itemBuilder: (context, index) {
+//                   return ListTile(
+//                     title: Text(
+//                       index < castDevices.keys.length
+//                           ? castDevices.values.elementAt(index).toString()
+//                           : 'Disconnect',
+//                     ),
+//                     onTap: () {
+//                       Navigator.pop(
+//                         context,
+//                         index < castDevices.keys.length
+//                             ? castDevices.keys.elementAt(index)
+//                             : null,
+//                       );
+//                     },
+//                   );
+//                 },
+//               ),
+//             ),
+//           );
+//         },
+//       );
+//       await _videoViewController.startCasting(
+//         selectedCastDeviceName,
+//       );
+//     } else {
+//       _scaffoldKey.currentState
+//           .showSnackBar(SnackBar(content: Text("No Cast Device Found!")));
+//     }
+//   }
+//
+//   void _createCameraImage() async {
+//     Uint8List file = await _videoViewController.takeSnapshot();
+//     setState(() {
+//       image = file;
+//     });
+//   }
+// }
 
 
 
@@ -1945,8 +2868,7 @@ import 'package:circle_network_ftp/playvideo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
-
-import 'Better.dart';
+import 'package:path_provider/path_provider.dart';
 import 'Search.dart';
 import 'VlcPlayer.dart';
 
@@ -2002,7 +2924,6 @@ class _SamplePlayerState extends State<SamplePlayer> {
 
   bool isSearching = false;
   var catagori = [
-    "4K Ultra HD Movie Collection",
     "Animation Dubbed Movies",
     "Animation Movie Japanese",
     "Animation Movies",
@@ -2041,13 +2962,34 @@ class _SamplePlayerState extends State<SamplePlayer> {
     // TODO: implement initState
     super.initState();
     this.getvalue();
+    this._deleteCacheDir();
+    this._deleteAppDir();
+
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
+
+      // TODO: implement dispose
     super.dispose();
     _controller.dispose();
+
+  }
+
+  Future<void> _deleteCacheDir() async {
+    final cacheDir = await getTemporaryDirectory();
+
+    if (cacheDir.existsSync()) {
+      cacheDir.deleteSync(recursive: true);
+    }
+  }
+
+  Future<void> _deleteAppDir() async {
+    final appDir = await getApplicationSupportDirectory();
+
+    if(appDir.existsSync()){
+      appDir.deleteSync(recursive: true);
+    }
   }
 
   @override
@@ -2055,109 +2997,245 @@ class _SamplePlayerState extends State<SamplePlayer> {
     var h=MediaQuery.of(context).size.height;
     var w=MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: Text("Circle FTP"),
-        centerTitle: true,
+    if(MediaQuery.of(context).orientation==Orientation.portrait){
+      return Scaffold(
         backgroundColor: Colors.black,
-      ),
-      body: ListView(
-        children: [
-          Container(
-            child: TextField(
-              style: TextStyle(color: Colors.white),
+        appBar: AppBar(
+          title: Text("Circle FTP"),
+          centerTitle: true,
+          backgroundColor: Colors.black,
+        ),
+        body: ListView(
+          children: [
+            Container(
+              child: TextField(
+                style: TextStyle(color: Colors.white),
 
-              cursorColor: Colors.white,
-              onChanged: (text) {
-                name = text;
-              },
-              controller: _controller,
-              obscureText: false,
-              decoration: InputDecoration(
-                focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(25)),
-                    borderSide: BorderSide(color: Colors.white)
-                ),
-                border: OutlineInputBorder(),
-                //labelText: 'Movie Name',
-                hintText: "Search Movie",
-                hintStyle: TextStyle(fontSize: w/20,color: Colors.white),
-                suffixIcon: InkWell(
-                  child: Icon(Icons.search,color: Colors.white,),
-                  onTap: () {
-                    if (name.length > 0) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => Search(movie_name: name,)));
-                    }
-                  },
+                cursorColor: Colors.white,
+                onChanged: (text) {
+                  name = text;
+                },
+                controller: _controller,
+                obscureText: false,
+                decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(25)),
+                      borderSide: BorderSide(color: Colors.white)
+                  ),
+                  border: OutlineInputBorder(),
+                  //labelText: 'Movie Name',
+                  hintText: "Search Movie",
+                  hintStyle: TextStyle(fontSize: w/20,color: Colors.white),
+                  suffixIcon: InkWell(
+                    child: Icon(Icons.search,color: Colors.white,),
+                    onTap: () {
+                      if (name.length > 0) {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => Search(movie_name: name,)));
+                      }
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-          Container(
-            color: Colors.deepPurpleAccent[50],
-            child: ListView.builder(
-                physics: ClampingScrollPhysics(),
-                shrinkWrap: true,
-                scrollDirection: Axis.vertical,
-                itemCount: data20191 == null ? 0 : catagori.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: EdgeInsets.only(left: 8.0),
-                    child: Column(
-                      children: [
-                        Container(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child:
-                                Text(catagori[index].toString(),style: TextStyle(fontSize: w/20,fontWeight: FontWeight.bold,color: Colors.white),),
+            Container(
+              color: Colors.deepPurpleAccent[50],
+              child: ListView.builder(
+                  physics: ClampingScrollPhysics(),
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemCount: data20191 == null ? 0 : data20191.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: EdgeInsets.only(left: 8.0),
+                      child: Column(
+                        children: [
+                          Container(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child:
+                              Text(data20191[index]["custom_cat_name"].toString(),style: TextStyle(fontSize: w/20,fontWeight: FontWeight.bold,color: Colors.white),),
+                            ),
                           ),
-                        ),
-                        Container(
-                          height: 200,
-                          width: double.infinity,
-                          child: ListView.builder(
-                              physics: ClampingScrollPhysics(),
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              itemCount: data20191[index]["movies"] == null ? 0 : data20191[index]["movies"].length,
-                              itemBuilder: (BuildContext context, int inde) {
-                                return InkWell(
-                                  onTap: () {
-                                  // Navigator.push(context, MaterialPageRoute(builder: (context) => Playvideo(name: data20191[index]["movies"][inde]["name"].toString(), url: data20191[index]["movies"][inde]["media"].toString(), Cat_id: index, id: inde, data: data20191,)));
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>MyAppScaffold(url: data20191[index]["movies"][inde]["media"].toString(),)));
-                                    //Navigator.push(context, MaterialPageRoute(builder: (context) => Better(name: data20191[index]["movies"][inde]["name"].toString(), url: data20191[index]["movies"][inde]["media"].toString(), Cat_id: index, id: inde, data: data20191,)));
-                                  },
-                                  child: Container(
-                                    height: 200,
-                                    width:
-                                        MediaQuery.of(context).size.width * .4,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        imageUrl: data20191[index]["movies"][inde]["banner"].toString(),
-                                        progressIndicatorBuilder:
-                                            (context, url, downloadProgress) =>
-                                                Center(
-                                                  child: spinkit,
+                          Container(
+                            height: 200,
+                            width: double.infinity,
+                            child: ListView.builder(
+                                physics: ClampingScrollPhysics(),
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                itemCount: data20191[index]["movies"] == null ? 0 : data20191[index]["movies"].length,
+                                itemBuilder: (BuildContext contex, int inde) {
+                                  return InkWell(
+                                    onTap: () {
+                                      // Navigator.push(contex, MaterialPageRoute(builder: (contex) => Playvideo(name: data20191[index]["movies"][inde]["name"].toString(), url: data20191[index]["movies"][inde]["media"].toString(), Cat_id: index, id: inde, data: data20191,)));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context)=>MyAppScaffold(name: data20191[index]["movies"][inde]["name"].toString(), url: data20191[index]["movies"][inde]["media"].toString(), Cat_id: index, id: inde, data: data20191,)));
+                                      //Navigator.push(context, MaterialPageRoute(builder: (context) => Better(name: data20191[index]["movies"][inde]["name"].toString(), url: data20191[index]["movies"][inde]["media"].toString(), Cat_id: index, id: inde, data: data20191,)));
+                                    },
+                                    child: Container(
+                                      height: 200,
+                                      width:
+                                      MediaQuery.of(context).size.width * .4,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 8.0),
+                                        child: CachedNetworkImage(
+                                          fit: BoxFit.cover,
+                                          imageUrl: data20191[index]["movies"][inde]["banner"].toString(),
+                                          progressIndicatorBuilder:
+                                              (context, url, downloadProgress) =>
+                                              Center(
+                                                child: spinkit,
+                                              ),
+                                          errorWidget: (context, url, error) =>
+                                              Icon(Icons.error),
                                         ),
-                                        errorWidget: (context, url, error) =>
-                                            Icon(Icons.error),
                                       ),
                                     ),
-                                  ),
-                                );
-                              }),
-                        ),
-                      ],
+                                  );
+                                }),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+            ),
+          ],
+        ),
+      );
+    }else{
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: ListView(
+          children: [
+            Container(
+              child: TextField(
+                style: TextStyle(color: Colors.white),
+                cursorColor: Colors.white,
+                onChanged: (text) {
+                  name = text;
+                },
+                controller: _controller,
+                obscureText: false,
+                decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(25)),
+                      borderSide: BorderSide(color: Colors.white)),
+                  border: OutlineInputBorder(),
+                  //labelText: 'Movie Name',
+                  hintText: "Search Movie",
+                  hintStyle: TextStyle(fontSize: h / 20, color: Colors.white),
+                  suffixIcon: InkWell(
+                    child: Icon(
+                      Icons.search,
+                      color: Colors.white,
                     ),
-                  );
-                }),
-          ),
-        ],
-      ),
-    );
+                    onTap: () {
+                      if (name.length > 0) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Search(
+                                  movie_name: name,
+                                )));
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              color: Colors.deepPurpleAccent[50],
+              child: ListView.builder(
+                  physics: ClampingScrollPhysics(),
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemCount: data20191 == null ? 0 : data20191.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: EdgeInsets.only(left: 8.0),
+                      child: Column(
+                        children: [
+                          Container(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                data20191[index]["custom_cat_name"].toString(),
+                                style: TextStyle(
+                                    fontSize: h / 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: 200,
+                            width: double.infinity,
+                            child: ListView.builder(
+                                physics: ClampingScrollPhysics(),
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                itemCount: data20191[index]["movies"] == null
+                                    ? 0
+                                    : data20191[index]["movies"].length,
+                                itemBuilder: (BuildContext contex, int inde) {
+                                  return InkWell(
+                                    onTap: () {
+                                      // Navigator.push(contex, MaterialPageRoute(builder: (contex) => Playvideo(name: data20191[index]["movies"][inde]["name"].toString(), url: data20191[index]["movies"][inde]["media"].toString(), Cat_id: index, id: inde, data: data20191,)));
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MyAppScaffold(
+                                                    name: data20191[index]
+                                                    ["movies"][inde]
+                                                    ["name"]
+                                                        .toString(),
+                                                    url: data20191[index]
+                                                    ["movies"][inde]
+                                                    ["media"]
+                                                        .toString(),
+                                                    Cat_id: index,
+                                                    id: inde,
+                                                    data: data20191,
+                                                  )));
+                                      //Navigator.push(context, MaterialPageRoute(builder: (context) => Better(name: data20191[index]["movies"][inde]["name"].toString(), url: data20191[index]["movies"][inde]["media"].toString(), Cat_id: index, id: inde, data: data20191,)));
+                                    },
+                                    child: Container(
+                                      height: 180,
+                                      width: MediaQuery.of(context).size.width *
+                                          .2,
+                                      child: Padding(
+                                        padding:
+                                        const EdgeInsets.only(left: 8.0),
+                                        child: CachedNetworkImage(
+                                          fit: BoxFit.fill,
+                                          imageUrl: data20191[index]["movies"]
+                                          [inde]["banner"]
+                                              .toString(),
+                                          progressIndicatorBuilder: (context,
+                                              url, downloadProgress) =>
+                                              Center(
+                                                child: spinkit,
+                                              ),
+                                          errorWidget: (context, url, error) =>
+                                              Icon(Icons.error),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+            ),
+          ],
+        ),
+      );
+    }
+
+
   }
+
 }
 

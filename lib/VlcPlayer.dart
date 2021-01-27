@@ -1,17 +1,19 @@
+import 'dart:async';
 import 'dart:typed_data';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 
 
 
 
 class MyAppScaffold extends StatefulWidget {
-  var url;
-  MyAppScaffold({this.url});
+  var name,url,Cat_id,id,data;
+  MyAppScaffold({this.name,this.url,this.Cat_id,this.id,this.data});
   @override
-  State<StatefulWidget> createState() => MyAppScaffoldState(url);
+  State<StatefulWidget> createState() => MyAppScaffoldState(name,url,Cat_id,id,data);
 }
 
 class MyAppScaffoldState extends State<MyAppScaffold> {
@@ -36,12 +38,29 @@ class MyAppScaffoldState extends State<MyAppScaffold> {
   bool getCastDeviceBtnEnabled = false;
   var h=250.0;
   var fullscreen=false;
+  var isVisibility=false;
+  var next,previous;
+  var AppbarText;
+  var show=true;
 
   var _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  MyAppScaffoldState(url);
+  MyAppScaffoldState(name, url, cat_id, id, data);
+
+  final spinkit = SpinKitWave(
+    itemBuilder: (BuildContext context, int index) {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: index.isEven ? Colors.yellow[200] : Colors.grey,
+        ),
+      );
+    },
+  );
+
   @override
   void initState() {
+    AppbarText=widget.data[widget.Cat_id]["movies"][widget.id]["name"].toString();
+
     _videoViewController = new VlcPlayerController(onInit: () {
       _videoViewController.play();
     });
@@ -101,287 +120,775 @@ class MyAppScaffoldState extends State<MyAppScaffold> {
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
+
+    if(widget.id==0){
+      next=widget.id+1;
+      previous=widget.data[widget.Cat_id]["movies"].length-1;
+      // print(previous);
+    }else{
+      next=widget.id+1;
+      previous=widget.id-1;
+    }
+    if(widget.id==widget.data[widget.Cat_id]["movies"].length-1){
+      next=0;
+      previous=widget.id-1;
+    }
+    var subHeight,playHeight;
+    subHeight=MediaQuery.of(context).size.height/40;
+    playHeight=MediaQuery.of(context).size.height/40;
+
+
     if(MediaQuery.of(context).orientation==Orientation.portrait){
       return new Scaffold(
-        key: _scaffoldKey,
-        appBar: new AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.camera),
-          onPressed: _createCameraImage,
+
+        appBar: fullscreen ? null : new AppBar(
+          title:  Text(AppbarText.toString()),
         ),
         body: Builder(builder: (context) {
           return Container(
+            color: Colors.black,
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  isVisibility = true;
+                });
 
-            child: ListView(
-              shrinkWrap: true,
-              children: <Widget>[
-                SizedBox(
-                  height: h,
-                  child: new VlcPlayer(
-                    aspectRatio: 16 / 9,
-                    url: widget.url.toString(),
-                    isLocalMedia: false,
-                    controller: _videoViewController,
-                    // Play with vlc options
-                    options: [
-                      '--quiet',
+                Timer(Duration(seconds: 20), () {
+                  // 5s over, navigate to a new page
+                  setState(() {
+                    isVisibility = false;
+                  });
+                });
+              },
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  Container(
+                    height: h,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          child: SizedBox(
+                            height: h,
+                            child: new VlcPlayer(
+                              aspectRatio: 16 / 9,
+                              url: widget.url.toString(),
+                              isLocalMedia: false,
+                              controller: _videoViewController,
+                              // Play with vlc options
+                              options: [
+                                '--quiet',
 //                '-vvv',
-                      '--no-drop-late-frames',
-                      '--no-skip-frames',
-                      '--rtsp-tcp',
-                    ],
-                    hwAcc: HwAcc.DISABLED,
-                    // or {HwAcc.AUTO, HwAcc.DECODING, HwAcc.FULL}
-                    placeholder: Container(
-                      height: h,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[CircularProgressIndicator()],
+                                '--no-drop-late-frames',
+                                '--no-skip-frames',
+                                '--rtsp-tcp',
+                              ],
+                              hwAcc: HwAcc.DISABLED,
+                              // or {HwAcc.AUTO, HwAcc.DECODING, HwAcc.FULL}
+                              placeholder: Container(
+                                height: h,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    CircularProgressIndicator()
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: isVisibility,
+                          child: Positioned(
+                            bottom: 0,
+                            child: Container(
+
+                              width: MediaQuery.of(context).size.width,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Text(position,style: TextStyle(color: Colors.white),),
+                                        Expanded(
+                                          child: Slider(
+                                            activeColor: Colors.blue,
+                                            value: sliderValue,
+                                            min: 0.0,
+                                            max:
+                                            _videoViewController.duration ==
+                                                null
+                                                ? (sliderValue + 1)
+                                                : _videoViewController
+                                                .duration.inSeconds
+                                                .toDouble(),
+                                            onChanged: (progress) {
+                                              setState(() {
+                                                sliderValue =
+                                                    progress.floor().toDouble();
+                                              });
+                                              //convert to Milliseconds since VLC requires MS to set time
+                                              _videoViewController.setTime(
+                                                  sliderValue.toInt() * 1000);
+                                            },
+                                          ),
+                                        ),
+                                        Text(duration,style: TextStyle(color: Colors.white)),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    height: playHeight,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        FlatButton(
+                                            child: isPlaying
+                                                ? Icon(
+                                                    Icons.pause_circle_outline,
+                                                    color: Colors.blueGrey,
+                                                  )
+                                                : Icon(
+                                                    Icons.play_circle_outline,
+                                                    color: Colors.blueGrey,
+                                                  ),
+                                            onPressed: () =>
+                                                {playOrPauseVideo()}),
+                                        FlatButton(
+                                          onPressed: () {
+                                            SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+                                            if (fullscreen == false) {
+                                              setState(() {
+                                                h = MediaQuery.of(context)
+                                                    .size
+                                                    .height;
+
+                                                fullscreen = true;
+                                                show=false;
+
+
+                                              });
+                                            } else {
+                                              setState(() {
+                                                h = 250.0;
+                                                fullscreen = false;
+                                                show=true;
+                                              });
+                                            }
+                                          },
+                                          child: fullscreen
+                                              ? Icon(
+                                                  Icons.fullscreen_exit,
+                                                  color: Colors.blueGrey,
+                                                )
+                                              : Icon(
+                                                  Icons.fullscreen,
+                                                  color: Colors.blueGrey,
+                                                ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: isVisibility,
+                          child: Positioned(
+                            top: 0,
+                            child: Container(
+                              height: subHeight,
+                              width: MediaQuery.of(context).size.width,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  RaisedButton(
+                                    color: Colors.transparent,
+                                    child: Text('Get Subtitle Tracks',style: TextStyle(color: Colors.white)),
+                                    onPressed: () {
+                                      _getSubtitleTracks();
+                                    },
+                                  ),
+                                  RaisedButton(
+                                    color: Colors.transparent,
+                                    child: Text('Get Audio Tracks',style: TextStyle(color: Colors.white)),
+                                    onPressed: () {
+                                      _getAudioTracks();
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: isVisibility,
+                          child: Positioned(
+                            top: h/2-subHeight,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      _videoViewController.setTime(
+                                          sliderValue.toInt() * 1000 - 10000);
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.only(left: 100),
+                                    child: Container(
+
+                                        child: Icon(Icons.fast_rewind,color: Colors.blue,)),
+                                  ),
+                                ),
+                                InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _videoViewController.setTime(
+                                            sliderValue.toInt() * 1000 + 10000);
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.only(right: 100.0),
+                                      child: Container(
+
+                                        child: Icon(Icons.fast_forward,color: Colors.blue,),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                            ),),
+                          ),
+                        )
+
+
+                        // Visibility(
+                        //   visible: isVisibility,
+                        //   child: Positioned(
+                        //     top: subHeight+20,
+                        //     left: 0,
+                        //     child: InkWell(
+                        //       onDoubleTap: (){
+                        //         _videoViewController.setTime(
+                        //             sliderValue.toInt() * 1000-10000);
+                        //       },
+                        //       child: Container(
+                        //         height: h-subHeight-playHeight-20,
+                        //         width: MediaQuery.of(context).size.width/2,
+                        //         child: Padding(
+                        //           padding: const EdgeInsets.only(left: 50.0),
+                        //           child: InkWell(
+                        //               onTap: (){
+                        //                 _videoViewController.setTime(
+                        //                     sliderValue.toInt() * 1000-10000);
+                        //               },
+                        //               child: Icon(Icons.fast_rewind,color: Colors.white,)),
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // Visibility(
+                        //   visible: isVisibility,
+                        //   child: Positioned(
+                        //     top: subHeight+20,
+                        //     right: 0,
+                        //     child: InkWell(
+                        //       onDoubleTap: (){
+                        //         setState(() {
+                        //           _videoViewController.setTime(
+                        //               sliderValue.toInt() * 1000+10000);
+                        //         });
+                        //       },
+                        //         child: Container(
+                        //           height: h-subHeight-playHeight-20,
+                        //           width: MediaQuery.of(context).size.width/2,
+                        //           child: Padding(
+                        //             padding: const EdgeInsets.only(right: 50.0),
+                        //             child: InkWell(
+                        //                 onTap: (){
+                        //                   setState(() {
+                        //                     _videoViewController.setTime(
+                        //                         sliderValue.toInt() * 1000+10000);
+                        //                   });
+                        //                 },
+                        //                 child: Icon(Icons.fast_forward,color: Colors.white,)),
+                        //           ),
+                        //         )),
+                        //   ),
+                        // )
+                      ],
+                    ),
+                  ),
+
+                  Visibility(
+                    visible: show,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            InkWell(
+                              onTap: (){
+                                setState(() {
+                                  AppbarText=widget.data[widget.Cat_id]["movies"][previous]["name"].toString();
+                                });
+
+                                _videoViewController.setStreamUrl(widget.data[widget.Cat_id]["movies"][previous]["media"].toString());
+                                // if(previous==0){
+                                //   next=next-1;
+                                //   previous=widget.data[widget.Cat_id]["movies"].length-1;
+                                //   // print(previous);
+                                // }else{
+                                //   next=next-1;
+                                //   previous=previous-1;
+                                // }
+
+                              },
+                              child: Container(
+                                height: 200,
+                                width:
+                                MediaQuery.of(context).size.width * .4,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    imageUrl: widget.data[widget.Cat_id]["movies"][previous]["banner"].toString(),
+                                    progressIndicatorBuilder:
+                                        (context, url, downloadProgress) =>
+                                        Center(
+                                          child: spinkit,
+                                        ),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.error),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              onTap: (){
+                                setState(() {
+                                  AppbarText=widget.data[widget.Cat_id]["movies"][next]["name"].toString();
+                                });
+
+                                _videoViewController.setStreamUrl(widget.data[widget.Cat_id]["movies"][next]["media"].toString());
+                                // if(next==widget.data[widget.Cat_id]["movies"].length-1){
+                                //   next=0;
+                                //   previous=previous+1;
+                                // }else{
+                                //   next=next+1;
+                                //   previous=previous+1;
+                                // }
+                              },
+                              child: Container(
+                                height: 200,
+                                width:
+                                MediaQuery.of(context).size.width * .4,
+                                child: Padding(
+                                  padding: const EdgeInsets.all( 8.0),
+                                  child: CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    imageUrl: widget.data[widget.Cat_id]["movies"][next]["banner"].toString(),
+                                    progressIndicatorBuilder:
+                                        (context, url, downloadProgress) =>
+                                        Center(
+                                          child: spinkit,
+                                        ),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.error),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Flexible(
-                      flex: 1,
-                      child: FlatButton(
-                          child: isPlaying
-                              ? Icon(Icons.pause_circle_outline)
-                              : Icon(Icons.play_circle_outline),
-                          onPressed: () => {playOrPauseVideo()}),
-                    ),
-                    Flexible(
-                      flex: 3,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Text(position),
-                          Expanded(
-                            child: Slider(
-                              activeColor: Colors.red,
-                              value: sliderValue,
-                              min: 0.0,
-                              max: _videoViewController.duration == null
-                                  ? (sliderValue + 1)
-                                  : _videoViewController.duration.inSeconds
-                                  .toDouble(),
-                              onChanged: (progress) {
+                  Visibility(
+                    visible: show,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Container(
+
+                        width: MediaQuery.of(context).size.width,
+                        child: GridView.builder(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            crossAxisCount: 3,
+                            childAspectRatio: .7,
+                          ),
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: widget.data[widget.Cat_id]["movies"].length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return InkWell(
+                              onTap: (){
                                 setState(() {
-                                  sliderValue = progress.floor().toDouble();
+                                 AppbarText= widget.data[widget.Cat_id]["movies"][index]["name"].toString();
                                 });
-                                //convert to Milliseconds since VLC requires MS to set time
-                                _videoViewController
-                                    .setTime(sliderValue.toInt() * 1000);
+
+                                _videoViewController.setStreamUrl(widget.data[widget.Cat_id]["movies"][index]["media"].toString());
                               },
-                            ),
-                          ),
-                          Text(duration),
-                          FlatButton(
-                            onPressed: () {
-                              if(fullscreen==false){
-                                setState(() {
+                              child: Container(
 
-                                  h=MediaQuery.of(context).size.height;
-
-                                  fullscreen=true;
-                                });
-                              }else{
-                                setState(() {
-                                  h=250.0;
-                                  fullscreen=false;
-                                });
-                              }
-
-                            },
-                            child: fullscreen? Icon(Icons.fullscreen_exit):Icon(Icons.fullscreen),
-                          ),
-                        ],
+                                child: CachedNetworkImage(
+                                  fit: BoxFit.cover,
+                                  imageUrl: widget.data[widget.Cat_id]["movies"][index]
+                                  ["banner"]
+                                      .toString(),
+                                  progressIndicatorBuilder:
+                                      (context, url, downloadProgress) => Center(
+                                    child: spinkit,
+                                  ),
+                                  errorWidget: (context, url, error) => Icon(Icons.error),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  ],
-                ),
-                Divider(height: .1),
+                  )
 
-                // Row(
-                //   children: [
-                //     FlatButton(
-                //       child: Text("Change URL"),
-                //       onPressed: () =>
-                //           _videoViewController.setStreamUrl(changeUrl),
-                //     ),
-                //   ],
-                // ),
-                // Divider(height: 1),
-
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    RaisedButton(
-                      child: Text('Get Subtitle Tracks'),
-                      onPressed: () {
-                        _getSubtitleTracks();
-                      },
-                    ),
-                    RaisedButton(
-                      child: Text('Get Audio Tracks'),
-                      onPressed: () {
-                        _getAudioTracks();
-                      },
-                    )
-                  ],
-                ),
-
-
-              ],
+                  // Row(
+                  //   children: [
+                  //     FlatButton(
+                  //       child: Text("Change URL"),
+                  //       onPressed: () =>
+                  //           _videoViewController.setStreamUrl(changeUrl),
+                  //     ),
+                  //   ],
+                  // ),
+                  // Divider(height: 1),
+                ],
+              ),
             ),
           );
         }),
       );
     }else{
+      setState(() {
+        SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+      });
       return new Scaffold(
-        key: _scaffoldKey,
-        appBar: fullscreen ? null :  AppBar(
-          title: const Text('Plugin example app'),
-        ),
+
+        // appBar: fullscreen ? null :  AppBar(
+        //   title: const Text('Plugin example app'),
+        // ),
         body: Builder(builder: (context) {
           return Container(
+            color: Colors.black,
+           // width: MediaQuery.of(context).size.width,
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  isVisibility = true;
+                });
 
-            child: ListView(
-              shrinkWrap: true,
-              children: <Widget>[
-                SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: new VlcPlayer(
-                    aspectRatio: 16 / 9,
-                    url: widget.url.toString(),
-                    isLocalMedia: false,
-                    controller: _videoViewController,
-                    // Play with vlc options
-                    options: [
-                      '--quiet',
+                Timer(Duration(seconds: 10), () {
+                  // 5s over, navigate to a new page
+                  setState(() {
+                    isVisibility = false;
+                  });
+                });
+              },
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  Container(
+                    height: MediaQuery.of(context).size.height,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          child: SizedBox(
+                            height: MediaQuery.of(context).size.height,
+                            child: new VlcPlayer(
+                              aspectRatio: 16 / 9,
+                              url: widget.url.toString(),
+                              isLocalMedia: false,
+                              controller: _videoViewController,
+                              // Play with vlc options
+                              options: [
+                                '--quiet',
 //                '-vvv',
-                      '--no-drop-late-frames',
-                      '--no-skip-frames',
-                      '--rtsp-tcp',
-                    ],
-                    hwAcc: HwAcc.DISABLED,
-                    // or {HwAcc.AUTO, HwAcc.DECODING, HwAcc.FULL}
-                    placeholder: Container(
-                      height: MediaQuery.of(context).size.height-MediaQuery.of(context).padding.top,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[CircularProgressIndicator()],
-                      ),
-                    ),
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Flexible(
-                      flex: 1,
-                      child: FlatButton(
-                          child: isPlaying
-                              ? Icon(Icons.pause_circle_outline)
-                              : Icon(Icons.play_circle_outline),
-                          onPressed: () => {playOrPauseVideo()}),
-                    ),
-                    Flexible(
-                      flex: 3,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Text(position),
-                          Expanded(
-                            child: Slider(
-                              activeColor: Colors.red,
-                              value: sliderValue,
-                              min: 0.0,
-                              max: _videoViewController.duration == null
-                                  ? (sliderValue + 1)
-                                  : _videoViewController.duration.inSeconds
-                                  .toDouble(),
-                              onChanged: (progress) {
-                                setState(() {
-                                  sliderValue = progress.floor().toDouble();
-                                });
-                                //convert to Milliseconds since VLC requires MS to set time
-                                _videoViewController
-                                    .setTime(sliderValue.toInt() * 1000);
-                              },
+                                '--no-drop-late-frames',
+                                '--no-skip-frames',
+                                '--rtsp-tcp',
+                              ],
+                              hwAcc: HwAcc.DISABLED,
+                              // or {HwAcc.AUTO, HwAcc.DECODING, HwAcc.FULL}
+                              placeholder: Container(
+                                //height: MediaQuery.of(context).size.height-MediaQuery.of(context).padding.top,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[CircularProgressIndicator()],
+                                ),
+                              ),
                             ),
                           ),
-                          Text(duration),
-                          FlatButton(
-                            onPressed: () {
+                        ),
+                        Visibility(
+                          visible: isVisibility,
+                          child: Positioned(
+                            width: MediaQuery.of(context).size.width,
+                            bottom: 0,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Text(position,style: TextStyle(color: Colors.white),),
+                                        Expanded(
+                                          child: Slider(
+                                            activeColor: Colors.blue,
+                                            value: sliderValue,
+                                            min: 0.0,
+                                            max: _videoViewController.duration == null
+                                                ? (sliderValue + 1)
+                                                : _videoViewController.duration.inSeconds
+                                                .toDouble(),
+                                            onChanged: (progress) {
+                                              setState(() {
+                                                sliderValue = progress.floor().toDouble();
+                                              });
+                                              //convert to Milliseconds since VLC requires MS to set time
+                                              _videoViewController
+                                                  .setTime(sliderValue.toInt() * 1000);
+                                            },
+                                          ),
+                                        ),
+                                        Text(duration,style: TextStyle(color: Colors.white),),
 
-                              if(fullscreen==false){
-                                setState(() {
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
 
-
-                                  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-                                  fullscreen=true;
-                                });
-                              }else{
-                                setState(() {
-
-                                  fullscreen=false;
-                                });
-                              }
-
-                            },
-                            child: fullscreen? Icon(Icons.fullscreen_exit):Icon(Icons.fullscreen),
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        FlatButton(
+                                            child: isPlaying
+                                                ? Icon(Icons.pause_circle_outline,
+                                              color: Colors.blueGrey,)
+                                                : Icon(Icons.play_circle_outline,
+                                              color: Colors.blueGrey,),
+                                            onPressed: () => {playOrPauseVideo()}),
+                                        // FlatButton(
+                                        //   onPressed: () {
+                                        //
+                                        //     if(fullscreen==false){
+                                        //       setState(() {
+                                        //
+                                        //
+                                        //         SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+                                        //         fullscreen=true;
+                                        //       });
+                                        //     }else{
+                                        //       setState(() {
+                                        //
+                                        //         fullscreen=false;
+                                        //       });
+                                        //     }
+                                        //
+                                        //   },
+                                        //   child: fullscreen
+                                        //       ? Icon(
+                                        //           Icons.fullscreen_exit,
+                                        //           color: Colors.blueGrey,
+                                        //         )
+                                        //       : Icon(
+                                        //           Icons.fullscreen,
+                                        //           color: Colors.blueGrey,
+                                        //         ),
+                                        // ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ],
-                      ),
+                        ),
+                        Visibility(
+                          visible: isVisibility,
+                          child: Positioned(
+                            top: 0,
+                            child: Container(
+
+                              width: MediaQuery.of(context).size.width,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  RaisedButton(
+                                    color:Colors.transparent,
+                                    child: Text('Get Subtitle Tracks',style: TextStyle(color: Colors.white),),
+                                    onPressed: () {
+                                      _getSubtitleTracks();
+                                    },
+                                  ),
+                                  RaisedButton(
+                                    color:Colors.transparent,
+                                    child: Text('Get Audio Tracks',style: TextStyle(color: Colors.white),),
+                                    onPressed: () {
+                                      _getAudioTracks();
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: isVisibility,
+                          child: Positioned(
+                            top: MediaQuery.of(context).size.height/2-20,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _videoViewController.setTime(
+                                            sliderValue.toInt() * 1000 - 10000);
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.only(left: 100),
+                                      child: Container(
+
+                                          child: Icon(Icons.fast_rewind,color: Colors.blueGrey,size: 50,)),
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _videoViewController.setTime(
+                                            sliderValue.toInt() * 1000 + 10000);
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.only(right: 100.0),
+                                      child: Container(
+
+                                        child: Icon(Icons.fast_forward,color: Colors.blueGrey,size: 50,),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),),
+                          ),
+                        )
+                        // Visibility(
+                        //   visible: isVisibility,
+                        //   child: Positioned(
+                        //     top: subHeight+10,
+                        //     left: 0,
+                        //     child: InkWell(
+                        //       onDoubleTap: (){
+                        //         _videoViewController.setTime(
+                        //             sliderValue.toInt() * 1000-10000);
+                        //       },
+                        //       child: Container(
+                        //         height: MediaQuery.of(context).size.height-subHeight-playHeight-20,
+                        //         width: MediaQuery.of(context).size.width/2,
+                        //         child: Padding(
+                        //           padding: const EdgeInsets.only(left: 50.0),
+                        //           child: InkWell(
+                        //               onTap: (){
+                        //                 _videoViewController.setTime(
+                        //                     sliderValue.toInt() * 1000-10000);
+                        //               },
+                        //               child: Icon(Icons.fast_rewind,color: Colors.white,)),
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // Visibility(
+                        //   visible: isVisibility,
+                        //   child: Positioned(
+                        //     top: subHeight+10,
+                        //     right: 0,
+                        //     child: InkWell(
+                        //         onDoubleTap: (){
+                        //           setState(() {
+                        //             _videoViewController.setTime(
+                        //                 sliderValue.toInt() * 1000+10000);
+                        //           });
+                        //         },
+                        //         child: Container(
+                        //           height: MediaQuery.of(context).size.height-subHeight-playHeight-20,
+                        //           width: MediaQuery.of(context).size.width/2,
+                        //           child: Padding(
+                        //             padding: const EdgeInsets.only(right: 50.0),
+                        //             child: InkWell(
+                        //                 onTap: (){
+                        //                   setState(() {
+                        //                     _videoViewController.setTime(
+                        //                         sliderValue.toInt() * 1000+10000);
+                        //                   });
+                        //                 },
+                        //                 child: Icon(Icons.fast_forward,color: Colors.white,)),
+                        //           ),
+                        //         )),
+                        //   ),
+                        // )
+                      ],
                     ),
-                  ],
-                ),
-                Divider(height: .1),
-
-                // Row(
-                //   children: [
-                //     FlatButton(
-                //       child: Text("Change URL"),
-                //       onPressed: () =>
-                //           _videoViewController.setStreamUrl(changeUrl),
-                //     ),
-                //   ],
-                // ),
-                // Divider(height: 1),
-
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    RaisedButton(
-                      child: Text('Get Subtitle Tracks'),
-                      onPressed: () {
-                        _getSubtitleTracks();
-                      },
-                    ),
-                    RaisedButton(
-                      child: Text('Get Audio Tracks'),
-                      onPressed: () {
-                        _getAudioTracks();
-                      },
-                    )
-                  ],
-                ),
+                  ),
 
 
-              ],
+
+
+                  // Row(
+                  //   children: [
+                  //     FlatButton(
+                  //       child: Text("Change URL"),
+                  //       onPressed: () =>
+                  //           _videoViewController.setStreamUrl(changeUrl),
+                  //     ),
+                  //   ],
+                  // ),
+                  // Divider(height: 1),
+
+
+
+
+                ],
+              ),
             ),
           );
         }),
@@ -415,7 +922,6 @@ class MyAppScaffoldState extends State<MyAppScaffold> {
   void _getSubtitleTracks() async {
     if (_videoViewController.playingState.toString() != "PlayingState.PLAYING")
       return;
-
     Map<dynamic, dynamic> subtitleTracks =
     await _videoViewController.getSpuTracks();
     //
@@ -511,3 +1017,4 @@ class MyAppScaffoldState extends State<MyAppScaffold> {
     });
   }
 }
+

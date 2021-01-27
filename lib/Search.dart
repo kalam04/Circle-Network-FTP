@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:circle_network_ftp/playSearchVideo.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -108,23 +109,17 @@ class _SearchState extends State<Search> {
               itemBuilder: (BuildContext context, int index) {
                 return InkWell(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Playvideo(
-                              name: result[index]["name"].toString(),
-                              url: result[index]["media"].toString(),
-                            )));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => PlaySearch(url: result[index]["media"],)));
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
-                      height: 200,
+                      height: 400,
                       width: MediaQuery.of(context).size.width * .4,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: CachedNetworkImage(
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fill,
                           imageUrl: result[index]["banner"].toString(),
                           progressIndicatorBuilder:
                               (context, url, downloadProgress) => Center(

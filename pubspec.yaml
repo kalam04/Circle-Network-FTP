@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.9.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -29,13 +29,13 @@ dependencies:
   flick_video_player: ^0.1.1
   http:
   cached_network_image:
-  flutter_vlc_player: ^4.0.3
-  neeko: ^0.0.10
-  better_player:
-  chewie:
+  flutter_vlc_player:
   flutter_spinkit: ^4.1.2+1
-  mx_player_plugin: ^0.0.3
-  assorted_layout_widgets: ^3.0.0
+
+
+
+
+
 
 
 
@@ -47,6 +47,15 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.7.3"
+
+
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/icon.png"
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -66,6 +75,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

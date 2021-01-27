@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="circle_network_ftp"
+        android:label="Circle Movies"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
         <activity
